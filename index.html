@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>K예술영재 프로젝트 · K예술영재발굴워크숍(무용)</title>
+<meta name="description" content="2026 K예술영재 프로젝트 - K예술영재발굴워크숍(무용) 안내. 2026.7.17(금)~19(일), 한국예술영재교육원 광주캠퍼스">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --teal-deep:#123A44;
+    --teal-mid:#1B4C58;
+    --cream:#FBF4E4;
+    --paper:#FFFDF7;
+    --gold:#E7B95C;
+    --gold-soft:#F3D48A;
+    --gold-dim: rgba(231,185,92,0.18);
+    --ink:#16282C;
+    --ink-soft:#3C5257;
+    --rose:#D97C93;
+    --day1:#8FB48A;   --day1-bg:#EDF3EA;
+    --day2:#7FA9C4;   --day2-bg:#E9F1F5;
+    --day3:#D897A9;   --day3-bg:#F8ECEF;
+    --serif: 'Noto Serif KR', serif;
+    --sans: 'Noto Sans KR', sans-serif;
+    --shadow: 0 18px 40px -18px rgba(18,58,68,0.35);
+    --radius: 18px;
+    --navh: 76px;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; font-family:var(--sans); color:var(--ink); background:var(--cream);
+    -webkit-font-smoothing:antialiased; overscroll-behavior-y:none;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  a{color:inherit;}
+  .app{max-width:640px; margin:0 auto; position:relative; min-height:100vh;}
+
+  /* ---------- draft ribbon ---------- */
+  .draft-badge{
+    position:fixed; top:14px; right:-38px; z-index:90;
+    background:var(--rose); color:#fff; font-weight:700;
+    font-size:11px; letter-spacing:0.14em; padding:6px 46px;
+    transform:rotate(38deg); box-shadow:0 6px 14px rgba(0,0,0,0.25);
+    pointer-events:none;
+  }
+
+  /* ================= PAGES ================= */
+  .page{
+    display:none;
+    min-height:100vh;
+    padding-bottom: calc(var(--navh) + 24px);
+    animation: fadeIn .35s ease;
+  }
+  .page.active{display:block;}
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .page-head{
+    padding:20px 24px 4px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .page-head .idx{
+    font-family:var(--serif); font-weight:800; font-size:13px; color:var(--gold);
+    border:1px solid var(--gold); border-radius:999px; width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .page-head h3{
+    font-family:var(--serif); font-size:20px; margin:0; color:var(--teal-deep); font-weight:700;
+  }
+  .page-body{padding:14px 24px 10px;}
+
+  /* ---------- cover / home page ---------- */
+  #page-cover{
+    display:flex; align-items:center; justify-content:center;
+    min-height:calc(100vh - var(--navh));
+    padding:28px 20px calc(var(--navh) + 20px);
+  }
+  .cover-card{
+    position:relative; overflow:hidden;
+    width:100%; max-width:440px;
+    background:var(--teal-deep); color:var(--cream);
+    border-radius:26px; box-shadow:var(--shadow);
+  }
+  .cover-card::before{
+    content:""; position:absolute; inset:10px;
+    border:1px solid rgba(231,185,92,0.35); border-radius:14px; pointer-events:none;
+  }
+  .corner{position:absolute; width:14px;height:14px; background:var(--gold); opacity:0.9; transform:rotate(45deg);}
+  .corner.tl{top:20px; left:20px;} .corner.tr{top:20px; right:20px;}
+  .corner.bl{bottom:20px; left:20px;} .corner.br{bottom:20px; right:20px;}
+
+  .cover-inner{padding:44px 26px 4px; position:relative; text-align:center;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; justify-content:center;
+    font-size:11.5px; letter-spacing:0.24em; color:var(--gold-soft);
+    font-weight:600; margin-bottom:16px;
+  }
+  .eyebrow::before, .eyebrow::after{content:""; width:16px; height:1px; background:var(--gold-soft);}
+  .cover-inner h1{
+    font-family:var(--serif); font-weight:900; font-size:clamp(28px,8vw,38px);
+    line-height:1.18; margin:0 0 6px; color:var(--gold-soft); letter-spacing:-0.01em;
+  }
+  .cover-inner h2{
+    font-family:var(--serif); font-weight:500; font-size:clamp(15px,4vw,18px);
+    margin:0 0 18px; color:var(--cream); opacity:0.92;
+  }
+  .tag-pill{
+    display:inline-block; background:var(--gold-soft); color:var(--teal-deep);
+    font-weight:800; font-size:13px; padding:7px 20px; border-radius:999px; margin-bottom:20px;
+  }
+  .hero-meta{display:grid; gap:8px; margin-top:4px; justify-items:center;}
+  .hero-meta .date{font-family:var(--serif); font-weight:700; font-size:19px; color:var(--gold);}
+  .hero-meta .loc{color:var(--cream); opacity:0.85; font-size:13px;}
+  .hero-art{margin-top:20px; display:flex; justify-content:center;}
+
+  .cover-cta{
+    margin:22px 22px 26px; display:grid; grid-template-columns:1fr 1fr; gap:10px;
+    padding-top:20px; border-top:1px solid rgba(231,185,92,0.25); position:relative;
+  }
+  .cover-cta button{
+    background:rgba(251,244,228,0.08); border:1px solid rgba(231,185,92,0.4);
+    color:var(--gold-soft); border-radius:14px; padding:13px 8px; font-family:var(--sans);
+    font-weight:700; font-size:12.5px; cursor:pointer;
+  }
+
+  /* ---------- shared: lead text card ---------- */
+  .lead{
+    font-size:15.5px; line-height:1.9; color:var(--ink-soft);
+    background:var(--paper); padding:22px; border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .lead p{margin:0 0 14px;} .lead p:last-child{margin-bottom:0;}
+  .lead strong{color:var(--teal-deep);}
+
+  /* ---------- schedule ---------- */
+  .day-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .day-tab{
+    flex:1; border:none; border-radius:14px; padding:12px 6px; cursor:pointer;
+    font-family:var(--serif); font-weight:700; font-size:13.5px; color:var(--ink-soft);
+    background:var(--paper); box-shadow:var(--shadow); display:flex; flex-direction:column; gap:2px; align-items:center;
+    border:2px solid transparent;
+  }
+  .day-tab .dsub{font-size:10.5px; font-weight:500; opacity:0.75;}
+  .day-tab.active.d1{border-color:var(--day1); color:var(--day1); background:var(--day1-bg);}
+  .day-tab.active.d2{border-color:var(--day2); color:var(--day2); background:var(--day2-bg);}
+  .day-tab.active.d3{border-color:var(--day3); color:var(--day3); background:var(--day3-bg);}
+
+  .day-panel{display:none; background:var(--paper); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+  .day-panel.active{display:block;}
+  .day-panel-inner{padding:6px 18px 16px;}
+  .d1 .day-panel-inner{border-top:3px solid var(--day1-bg);}
+  .d2 .day-panel-inner{border-top:3px solid var(--day2-bg);}
+  .d3 .day-panel-inner{border-top:3px solid var(--day3-bg);}
+
+  .sched-row{display:grid; grid-template-columns:64px 1fr; gap:14px; padding:12px 2px; border-bottom:1px dashed rgba(18,58,68,0.12);}
+  .sched-row:last-child{border-bottom:none;}
+  .sched-time{font-family:var(--serif); font-size:12px; color:var(--ink-soft); line-height:1.4; padding-top:6px;}
+  .sched-time b{display:block; font-size:12.5px; color:var(--ink); font-weight:700;}
+  .sched-main{padding-top:6px;}
+  .sched-main .title{font-weight:700; font-size:14.5px; margin-bottom:2px;}
+  .sched-main .desc{font-size:12.8px; color:var(--ink-soft); line-height:1.6;}
+  .sched-row.dim{opacity:0.6;}
+  .sched-row.dim .title{font-weight:600; font-size:13px;}
+
+  /* ---------- staff placeholder ---------- */
+  .tbd-card{
+    background:var(--paper); border:1.5px dashed rgba(18,58,68,0.25);
+    border-radius:var(--radius); padding:40px 22px; text-align:center; color:var(--ink-soft);
+  }
+  .tbd-card .ico{font-size:28px; margin-bottom:10px; display:block;}
+  .tbd-card b{display:block; color:var(--teal-deep); font-family:var(--serif); font-size:16px; margin-bottom:6px;}
+
+  /* ---------- notice ---------- */
+  .notice-lead{
+    font-size:13.5px; color:var(--ink-soft); background:var(--gold-dim);
+    border-left:3px solid var(--gold); padding:14px 16px; border-radius:10px; margin-bottom:16px; line-height:1.7;
+  }
+  .notice-item{background:var(--paper); border-radius:14px; box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden;}
+  .notice-item summary{
+    list-style:none; cursor:pointer; padding:15px 18px; display:flex; align-items:center; gap:12px; font-weight:700; font-size:14.5px;
+  }
+  .notice-item summary::-webkit-details-marker{display:none;}
+  .notice-item summary .num{font-family:var(--serif); color:var(--gold); font-size:13px; font-weight:800; width:22px; flex:none;}
+  .notice-item summary::after{content:"+"; margin-left:auto; color:var(--ink-soft); font-size:18px; font-weight:400;}
+  .notice-item[open] summary::after{content:"–";}
+  .notice-item .n-body{padding:0 18px 16px 50px; font-size:13.2px; color:var(--ink-soft); line-height:1.75;}
+
+  /* ---------- growth note ---------- */
+  .gn-grid{display:grid; gap:12px;}
+  .gn-card{background:var(--paper); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:flex-start;}
+  .gn-ico{width:42px; height:42px; border-radius:12px; flex:none; background:var(--gold-dim); display:flex; align-items:center; justify-content:center; font-size:18px;}
+  .gn-card h4{margin:0 0 6px; font-family:var(--serif); font-size:15.5px; color:var(--teal-deep);}
+  .gn-card p{margin:0; font-size:13.3px; color:var(--ink-soft); line-height:1.7;}
+  .gn-arrow{display:flex; justify-content:center; color:var(--gold); font-size:14px; margin:2px 0;}
+
+  /* ---------- location ---------- */
+  .loc-card{background:var(--teal-deep); color:var(--cream); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow);}
+  .loc-card h4{font-family:var(--serif); margin:0 0 4px; color:var(--gold-soft); font-size:17px;}
+  .loc-card .addr{font-size:13.5px; line-height:2; opacity:0.9; margin-bottom:16px;}
+  .loc-card .addr b{color:var(--gold-soft); font-weight:600; margin-right:6px;}
+  .map-btn{display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--teal-deep); font-weight:800; font-size:13.5px; padding:11px 20px; border-radius:999px; text-decoration:none;}
+
+  .org-row{display:flex; flex-direction:column; gap:10px; font-size:12.5px; margin:20px 0 6px;}
+  .org-row div span{font-weight:700; color:var(--teal-deep); margin-right:6px;}
+  .sign-box{margin-top:16px; border:1.5px dashed rgba(18,58,68,0.25); border-radius:12px; padding:16px; font-size:12.5px; color:var(--ink-soft); background:var(--paper);}
+  .foot-brand{margin-top:20px; font-size:11px; letter-spacing:0.1em; opacity:0.55; text-align:center;}
+
+  /* ================= BOTTOM NAV ================= */
+  .navbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:80;
+    background:var(--teal-deep); border-top:1px solid rgba(231,185,92,0.3);
+    box-shadow:0 -10px 30px rgba(0,0,0,0.25);
+  }
+  .navbar-inner{
+    max-width:640px; margin:0 auto; display:flex;
+    padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  }
+  .nav-item{
+    flex:1; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:rgba(251,244,228,0.55); padding:6px 2px; border-radius:12px;
+  }
+  .nav-item .nico{font-size:18px; line-height:1;}
+  .nav-item .nlabel{font-size:10px; font-weight:700; letter-spacing:0.01em;}
+  .nav-item.active{color:var(--gold-soft); background:rgba(231,185,92,0.12);}
+  .nav-item.active .nico{transform:translateY(-1px);}
+
+  /* thin progress bar showing position among pages */
+  .page-progress{
+    position:fixed; top:0; left:0; right:0; height:3px; z-index:85;
+    background:rgba(18,58,68,0.08);
+  }
+  .page-progress i{
+    display:block; height:100%; background:var(--gold);
+    transition:width .35s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="draft-badge">DRAFT · 제작중</div>
+<div class="page-progress"><i id="progressBar" style="width:14.3%"></i></div>
+
+<div class="app">
+
+  <!-- ============ PAGE 0: 홈 ============ -->
+  <section class="page active" id="page-cover">
+    <div class="cover-card">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <div class="cover-inner">
+        <div class="eyebrow">2026 K-ARTS TALENT PROJECT</div>
+        <h1>K예술영재<br>프로젝트</h1>
+        <h2>K예술영재발굴워크숍</h2>
+        <span class="tag-pill">무용</span>
+        <div class="hero-meta">
+          <div class="date">2026.7.17(금) – 19(일)</div>
+          <div class="loc">📍 한국예술영재교육원 광주캠퍼스</div>
+        </div>
+        <div class="hero-art">
+          <svg width="120" height="120" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="75" cy="75" r="72" stroke="#E7B95C" stroke-opacity="0.35" stroke-width="1"/>
+            <path d="M75 40 C 60 55, 60 95, 75 120 C 90 95, 90 55, 75 40 Z" fill="#D97C93" fill-opacity="0.85"/>
+            <path d="M75 40 C 63 55, 63 92, 75 118" stroke="#F3D48A" stroke-width="1" fill="none" opacity="0.7"/>
+            <circle cx="75" cy="40" r="4" fill="#F3D48A"/>
+          </svg>
+        </div>
+      </div>
+      <div class="cover-cta">
+        <button data-goto="intro">프로젝트 소개 →</button>
+        <button data-goto="schedule">일정표 보기 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 1: 소개 ============ -->
+  <section class="page" id="page-intro">
+    <div class="page-head"><span class="idx">01</span><h3>K예술영재프로젝트 소개</h3></div>
+    <div class="page-body">
+      <div class="lead">
+        <p>2026 K예술영재 프로젝트는 <strong>음악, 무용, 전통예술, 미술</strong> 분야의 재능 있는 예술영재를 전국 단위로 발굴하고, 체계적인 교육과 멘토링, 공연 경험을 통해 미래 예술가로 성장할 수 있도록 지원하는 차세대 예술 인재 육성 프로그램입니다.</p>
+        <p>참가자들이 단순한 실기 훈련을 넘어 자신의 예술적 가능성을 발견하고, 창작자로서의 정체성과 자신감을 확립할 수 있도록 돕는 데 목적이 있습니다. 분야별 워크숍, 권역별 멘토링, 겨울 집중 캠프, 성과 발표 공연 등 단계별 프로그램을 통해 예술영재의 역량을 지속적으로 강화합니다.</p>
+        <p>전국의 예술영재에게 균등한 교육 기회를 제공하여 지역 간 예술교육 격차를 완화하고, 갈라 공연과 다큐멘터리, 유튜브 콘텐츠, 디지털 아카이빙을 통해 참가자들의 성장 과정과 성과를 국민과 함께 공유하고자 합니다.</p>
+        <p>예술영재 한 사람 한 사람의 가능성을 발견하고, 그 성장이 <strong>K-Culture의 미래</strong>로 이어질 수 있도록 함께 지원하는 의미 있는 여정입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 2: 일정표 ============ -->
+  <section class="page" id="page-schedule">
+    <div class="page-head"><span class="idx">02</span><h3>일정표</h3></div>
+    <div class="page-body">
+      <div class="day-tabs">
+        <button class="day-tab d1 active" data-day="1">DAY 1<span class="dsub">7/17(금)</span></button>
+        <button class="day-tab d2" data-day="2">DAY 2<span class="dsub">7/18(토)</span></button>
+        <button class="day-tab d3" data-day="3">DAY 3<span class="dsub">7/19(일)</span></button>
+      </div>
+
+      <div class="day-panel d1 active" id="day1">
+        <div class="day-panel-inner">
+          <div class="sched-row"><div class="sched-time"><b>9:30</b>~11:00<br><span>90'</span></div><div class="sched-main"><div class="title">Receipt</div><div class="desc">1층 로비 헬프데스크 _ 접수 및 웰컴키트 제공</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>11:00</b>~12:00<br><span>60'</span></div><div class="sched-main"><div class="title">OPENING CEREMONY</div><div class="desc">O.T : 한국영재교육연구원장님 인사말 / 교육 커리큘럼 및 교강사 소개 등</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>12:00</b>~13:00<br><span>60'</span></div><div class="sched-main"><div class="title">LUNCH TIME</div><div class="desc">도시락 및 음료</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>13:00</b>~15:00<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 1</div><div class="desc">발레 클라스</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>15:00</b>~15:30<br><span>30'</span></div><div class="sched-main"><div class="title">BREAK TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>15:30</b>~17:30<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 2</div><div class="desc">발레 레파토리</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>17:30</b>~18:30<br><span>60'</span></div><div class="sched-main"><div class="title">BREAK TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>18:30</b>~19:30<br><span>60'</span></div><div class="sched-main"><div class="title">CLASS 3</div><div class="desc">피지컬 트레이닝</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>19:30</b>~20:30<br><span>60'</span></div><div class="sched-main"><div class="title">Class Ends</div><div class="desc">개별귀가</div></div></div>
+        </div>
+      </div>
+
+      <div class="day-panel d2" id="day2">
+        <div class="day-panel-inner">
+          <div class="sched-row"><div class="sched-time"><b>10:00</b>~12:00<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 1</div><div class="desc">발레 클라스</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>12:00</b>~13:00<br><span>60'</span></div><div class="sched-main"><div class="title">LUNCH TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>13:00</b>~15:00<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 2</div><div class="desc">발레 레파토리</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>15:00</b>~15:30<br><span>30'</span></div><div class="sched-main"><div class="title">BREAK TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>15:30</b>~17:30<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 3</div><div class="desc">발레 이론 수업</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>17:30</b>~18:30<br><span>60'</span></div><div class="sched-main"><div class="title">Class Ends</div><div class="desc">개별귀가</div></div></div>
+        </div>
+      </div>
+
+      <div class="day-panel d3" id="day3">
+        <div class="day-panel-inner">
+          <div class="sched-row"><div class="sched-time"><b>10:00</b>~12:00<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 1</div><div class="desc">발레 클라스</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>12:00</b>~13:00<br><span>60'</span></div><div class="sched-main"><div class="title">LUNCH TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>13:00</b>~15:00<br><span>120'</span></div><div class="sched-main"><div class="title">CLASS 2</div><div class="desc">멘토링</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>15:00</b>~15:30<br><span>30'</span></div><div class="sched-main"><div class="title">BREAK TIME</div></div></div>
+          <div class="sched-row"><div class="sched-time"><b>15:30</b>~17:30<br><span>120'</span></div><div class="sched-main"><div class="title">CLOSING CEREMONY</div><div class="desc">수료식 : 수료증 수여 및 사진 촬영</div></div></div>
+          <div class="sched-row dim"><div class="sched-time"><b>17:30</b>~18:30<br><span>60'</span></div><div class="sched-main"><div class="title">Class Ends</div><div class="desc">개별귀가</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 3: 교강사 ============ -->
+  <section class="page" id="page-staff">
+    <div class="page-head"><span class="idx">03</span><h3>교·강사 소개</h3></div>
+    <div class="page-body">
+      <div class="tbd-card">
+        <span class="ico">🩰</span>
+        <b>교강사 프로필 준비 중</b>
+        확정되는 대로 이 페이지에 자동으로 업데이트될 예정입니다.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 4: 유의사항 ============ -->
+  <section class="page" id="page-notice">
+    <div class="page-head"><span class="idx">04</span><h3>참가자 유의사항</h3></div>
+    <div class="page-body">
+      <p class="notice-lead">2026 K예술영재 프로젝트는 참가자의 안전한 교육 참여와 원활한 프로그램 운영을 위해 아래 사항을 준수해 주시기 바랍니다.</p>
+      <details class="notice-item" open>
+        <summary><span class="num">01</span>출결 및 시간 준수</summary>
+        <div class="n-body">참가자는 프로그램별 시작 시간 전까지 지정된 장소에 도착하여 생활멘토에게 출결 확인을 완료해야 합니다. 지각, 조퇴, 결석이 발생할 경우 사전에 운영사무국에 반드시 알려야 하며, 무단결석 또는 잦은 지각은 수료 기준 충족에 영향을 줄 수 있습니다.</div>
+      </details>
+      <details class="notice-item">
+        <summary><span class="num">02</span>수업 참여 태도</summary>
+        <div class="n-body">참가자는 워크숍 프로그램에 성실히 참여해야 합니다. 수업 중에는 교강사와 운영진의 안내에 따르며, 다른 참가자의 학습과 연습을 방해하는 행동은 삼가해주시기 바랍니다.</div>
+      </details>
+      <details class="notice-item">
+        <summary><span class="num">03</span>안전 수칙 준수</summary>
+        <div class="n-body">참가자는 교육원의 모든 공간에서 안전 수칙을 준수해야 합니다. 무단이탈, 위험물 소지, 허가되지 않은 장소 출입, 장비 및 시설의 임의 사용은 금지됩니다. 응급상황이나 건강 이상이 발생한 경우 즉시 운영진에게 알려주시기 바랍니다.</div>
+      </details>
+      <details class="notice-item">
+        <summary><span class="num">04</span>개인 물품 관리</summary>
+        <div class="n-body">악기, 의상, 개인 장비 및 귀중품은 참가자 본인이 직접 관리해야 합니다. 분실 또는 파손을 방지하기 위해 개인 물품에는 이름을 표시하고, 운영진의 보관 안내가 있는 경우 이에 따라주시기 바랍니다.</div>
+      </details>
+      <details class="notice-item">
+        <summary><span class="num">05</span>사진·영상 촬영 및 기록 협조</summary>
+        <div class="n-body">본 프로젝트는 참가자의 성장 과정과 성과를 기록하기 위해 사진, 영상, 인터뷰 등이 진행될 수 있습니다. 촬영 및 아카이빙은 프로젝트 홍보, 성과 공유, 방송·온라인 콘텐츠 제작을 위해 활용될 수 있으며, 사전 동의 절차에 따라 진행됩니다.</div>
+      </details>
+      <details class="notice-item">
+        <summary><span class="num">06</span>식사 제공</summary>
+        <div class="n-body">제공되는 식사와 간식은 사전 취합된 정보를 반영하여 준비되며, 특이사항 발생 시 즉시 운영진에게 알려주시기 바랍니다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 5: 성장노트 ============ -->
+  <section class="page" id="page-growth">
+    <div class="page-head"><span class="idx">05</span><h3>성장노트 작성법</h3></div>
+    <div class="page-body">
+      <div class="gn-grid">
+        <div class="gn-card">
+          <div class="gn-ico">🎯</div>
+          <div><h4>작성 목적</h4><p>수업종료 후 자신의 배움, 변화, 부족한 점, 다음 목표를 정리하는 자기성찰 기록입니다.</p></div>
+        </div>
+        <div class="gn-arrow">▾</div>
+        <div class="gn-card">
+          <div class="gn-ico">📝</div>
+          <div><h4>작성 내용</h4><p>오늘의 배움, 기억에 남는 피드백, 어려웠던 점, 나의 성장 변화, 다음 교육 전까지의 목표를 작성합니다.</p></div>
+        </div>
+        <div class="gn-arrow">▾</div>
+        <div class="gn-card">
+          <div class="gn-ico">💡</div>
+          <div><h4>작성 방법</h4><p>정답을 쓰는 것이 아니라, 오늘 느끼고 배운 내용을 솔직하고 구체적으로 기록합니다.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 6: 오시는 길 ============ -->
+  <section class="page" id="page-location">
+    <div class="page-head"><span class="idx">06</span><h3>오시는 길</h3></div>
+    <div class="page-body">
+      <div class="loc-card">
+        <h4>한국예술영재교육원 광주캠퍼스</h4>
+        <div class="addr">
+          <div><b>주소</b>광주광역시 동구 장동 99</div>
+          <div><b>도로명주소</b>광주광역시 동구 제봉로110번길 10</div>
+        </div>
+        <a class="map-btn" href="https://map.naver.com/p/search/%EA%B4%91%EC%A3%BC%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%8F%99%EA%B5%AC%20%EC%A0%9C%EB%B4%89%EB%A1%9C110%EB%B2%88%EA%B8%B8%2010" target="_blank" rel="noopener">지도에서 보기 →</a>
+      </div>
+      <div class="org-row">
+        <div><span>주최</span>문화체육관광부</div>
+        <div><span>주관</span>한국예술종합학교 산학협력단 · 한국예술영재교육연구원(KRIGA)</div>
+      </div>
+      <div class="sign-box">연구원장 및 운영진 성함 — 추후 확정 예정</div>
+      <div class="foot-brand">2026 K-ARTS TALENT PROJECT · 본 페이지는 제작 중인 시안입니다</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="navbar">
+  <div class="navbar-inner" id="navInner">
+    <button class="nav-item active" data-page="cover">
+      <span class="nico">🏛️</span><span class="nlabel">홈</span>
+    </button>
+    <button class="nav-item" data-page="intro">
+      <span class="nico">📖</span><span class="nlabel">소개</span>
+    </button>
+    <button class="nav-item" data-page="schedule">
+      <span class="nico">📅</span><span class="nlabel">일정</span>
+    </button>
+    <button class="nav-item" data-page="staff">
+      <span class="nico">🩰</span><span class="nlabel">강사</span>
+    </button>
+    <button class="nav-item" data-page="notice">
+      <span class="nico">📋</span><span class="nlabel">유의</span>
+    </button>
+    <button class="nav-item" data-page="growth">
+      <span class="nico">📝</span><span class="nlabel">노트</span>
+    </button>
+    <button class="nav-item" data-page="location">
+      <span class="nico">📍</span><span class="nlabel">위치</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  const pages = ['cover','intro','schedule','staff','notice','growth','location'];
+
+  function goTo(name){
+    if(!pages.includes(name)) return;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const target = document.getElementById('page-'+name);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    const navBtn = document.querySelector('.nav-item[data-page="'+name+'"]');
+    if(navBtn) navBtn.classList.add('active');
+    const idx = pages.indexOf(name);
+    const bar = document.getElementById('progressBar');
+    if(bar) bar.style.width = ((idx+1)/pages.length*100)+'%';
+    window.scrollTo(0,0);
+    history.replaceState(null,'','#'+name);
+  }
+
+  function showDay(n){
+    document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p=>p.classList.remove('active'));
+    const tab = document.querySelector('.day-tab.d'+n);
+    const panel = document.getElementById('day'+n);
+    if(tab) tab.classList.add('active');
+    if(panel) panel.classList.add('active');
+  }
+
+  // wire up all navigation controls (avoids relying on inline handlers)
+  document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
+    btn.addEventListener('click', ()=> goTo(btn.getAttribute('data-page')));
+  });
+  document.querySelectorAll('[data-goto]').forEach(btn=>{
+    btn.addEventListener('click', ()=> goTo(btn.getAttribute('data-goto')));
+  });
+  document.querySelectorAll('.day-tab[data-day]').forEach(btn=>{
+    btn.addEventListener('click', ()=> showDay(btn.getAttribute('data-day')));
+  });
+
+  // deep link on load
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const hash = location.hash.replace('#','');
+    if(pages.includes(hash)) goTo(hash);
+  });
+
+  // basic swipe navigation between pages
+  let touchStartX = null;
+  const appEl = document.querySelector('.app');
+  appEl.addEventListener('touchstart', e=>{
+    touchStartX = e.changedTouches[0].clientX;
+  }, {passive:true});
+  appEl.addEventListener('touchend', e=>{
+    if(touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 60){
+      const current = document.querySelector('.page.active').id.replace('page-','');
+      let idx = pages.indexOf(current);
+      idx = dx < 0 ? Math.min(idx+1, pages.length-1) : Math.max(idx-1, 0);
+      goTo(pages[idx]);
+    }
+    touchStartX = null;
+  }, {passive:true});
+</script>
+</body>
+</html>
