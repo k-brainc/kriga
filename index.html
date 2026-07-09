@@ -63,22 +63,7 @@
   .page.active{display:block;}
   @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
 
-  .page-head{
-    position:sticky; top:3px; z-index:20;
-    background:var(--cream);
-    padding:12px 22px 10px;
-    display:flex; align-items:center; gap:8px;
-    border-bottom:1px solid rgba(18,58,68,0.08);
-  }
-  .page-head .idx{
-    font-family:var(--serif); font-weight:800; font-size:10px; color:var(--gold);
-    border:1px solid var(--gold); border-radius:999px; width:18px; height:18px;
-    display:flex; align-items:center; justify-content:center; flex:none;
-  }
-  .page-head h3{
-    font-family:var(--serif); font-size:15.5px; margin:0; color:var(--teal-deep); font-weight:700;
-  }
-  .page-body{padding:12px 24px 10px;}
+  .page-body{padding:26px 24px 10px;}
 
   /* ---------- cover / home page ---------- */
   #page-cover{
@@ -136,7 +121,7 @@
 
   /* ---------- shared: lead text card ---------- */
   .lead{
-    font-size:15.5px; line-height:1.9; color:var(--ink-soft);
+    font-size:17.5px; line-height:1.85; color:var(--ink-soft);
     background:var(--paper); padding:22px; border-radius:var(--radius); box-shadow:var(--shadow);
   }
   .lead p{margin:0 0 14px;} .lead p:last-child{margin-bottom:0;}
@@ -146,11 +131,11 @@
   .day-tabs{display:flex; gap:8px; margin-bottom:16px;}
   .day-tab{
     flex:1; border:none; border-radius:14px; padding:12px 6px; cursor:pointer;
-    font-family:var(--serif); font-weight:700; font-size:13.5px; color:var(--ink-soft);
+    font-family:var(--serif); font-weight:700; font-size:15px; color:var(--ink-soft);
     background:var(--paper); box-shadow:var(--shadow); display:flex; flex-direction:column; gap:2px; align-items:center;
     border:2px solid transparent;
   }
-  .day-tab .dsub{font-size:10.5px; font-weight:500; opacity:0.75;}
+  .day-tab .dsub{font-size:11.5px; font-weight:500; opacity:0.75;}
   .day-tab.active.d1{border-color:var(--day1); color:var(--day1); background:var(--day1-bg);}
   .day-tab.active.d2{border-color:var(--day2); color:var(--day2); background:var(--day2-bg);}
   .day-tab.active.d3{border-color:var(--day3); color:var(--day3); background:var(--day3-bg);}
@@ -164,13 +149,13 @@
 
   .sched-row{display:grid; grid-template-columns:64px 1fr; gap:14px; padding:12px 2px; border-bottom:1px dashed rgba(18,58,68,0.12);}
   .sched-row:last-child{border-bottom:none;}
-  .sched-time{font-family:var(--serif); font-size:12px; color:var(--ink-soft); line-height:1.4; padding-top:6px;}
-  .sched-time b{display:block; font-size:12.5px; color:var(--ink); font-weight:700;}
+  .sched-time{font-family:var(--serif); font-size:13.5px; color:var(--ink-soft); line-height:1.4; padding-top:6px;}
+  .sched-time b{display:block; font-size:14px; color:var(--ink); font-weight:700;}
   .sched-main{padding-top:6px;}
-  .sched-main .title{font-weight:700; font-size:14.5px; margin-bottom:2px;}
-  .sched-main .desc{font-size:12.8px; color:var(--ink-soft); line-height:1.6;}
+  .sched-main .title{font-weight:700; font-size:16.5px; margin-bottom:3px;}
+  .sched-main .desc{font-size:14.5px; color:var(--ink-soft); line-height:1.65;}
   .sched-row.dim{opacity:0.6;}
-  .sched-row.dim .title{font-weight:600; font-size:13px;}
+  .sched-row.dim .title{font-weight:600; font-size:14.5px;}
 
   /* ---------- staff placeholder ---------- */
   .tbd-card{
@@ -178,41 +163,41 @@
     border-radius:var(--radius); padding:40px 22px; text-align:center; color:var(--ink-soft);
   }
   .tbd-card .ico{font-size:28px; margin-bottom:10px; display:block;}
-  .tbd-card b{display:block; color:var(--teal-deep); font-family:var(--serif); font-size:16px; margin-bottom:6px;}
+  .tbd-card b{display:block; color:var(--teal-deep); font-family:var(--serif); font-size:18px; margin-bottom:6px;}
 
   /* ---------- notice ---------- */
   .notice-lead{
-    font-size:13.5px; color:var(--ink-soft); background:var(--gold-dim);
+    font-size:15px; color:var(--ink-soft); background:var(--gold-dim);
     border-left:3px solid var(--gold); padding:14px 16px; border-radius:10px; margin-bottom:16px; line-height:1.7;
   }
   .notice-item{background:var(--paper); border-radius:14px; box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden;}
   .notice-item summary{
-    list-style:none; cursor:pointer; padding:15px 18px; display:flex; align-items:center; gap:12px; font-weight:700; font-size:14.5px;
+    list-style:none; cursor:pointer; padding:16px 18px; display:flex; align-items:center; gap:12px; font-weight:700; font-size:16.5px;
   }
   .notice-item summary::-webkit-details-marker{display:none;}
   .notice-item summary .num{font-family:var(--serif); color:var(--gold); font-size:13px; font-weight:800; width:22px; flex:none;}
   .notice-item summary::after{content:"+"; margin-left:auto; color:var(--ink-soft); font-size:18px; font-weight:400;}
   .notice-item[open] summary::after{content:"–";}
-  .notice-item .n-body{padding:0 18px 16px 50px; font-size:13.2px; color:var(--ink-soft); line-height:1.75;}
+  .notice-item .n-body{padding:0 18px 16px 50px; font-size:15px; color:var(--ink-soft); line-height:1.75;}
 
   /* ---------- growth note ---------- */
   .gn-grid{display:grid; gap:12px;}
   .gn-card{background:var(--paper); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:flex-start;}
   .gn-ico{width:42px; height:42px; border-radius:12px; flex:none; background:var(--gold-dim); display:flex; align-items:center; justify-content:center; font-size:18px;}
-  .gn-card h4{margin:0 0 6px; font-family:var(--serif); font-size:15.5px; color:var(--teal-deep);}
-  .gn-card p{margin:0; font-size:13.3px; color:var(--ink-soft); line-height:1.7;}
+  .gn-card h4{margin:0 0 6px; font-family:var(--serif); font-size:17.5px; color:var(--teal-deep);}
+  .gn-card p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.75;}
   .gn-arrow{display:flex; justify-content:center; color:var(--gold); font-size:14px; margin:2px 0;}
 
   /* ---------- location ---------- */
   .loc-card{background:var(--teal-deep); color:var(--cream); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow);}
-  .loc-card h4{font-family:var(--serif); margin:0 0 4px; color:var(--gold-soft); font-size:17px;}
-  .loc-card .addr{font-size:13.5px; line-height:2; opacity:0.9; margin-bottom:16px;}
+  .loc-card h4{font-family:var(--serif); margin:0 0 4px; color:var(--gold-soft); font-size:19px;}
+  .loc-card .addr{font-size:15px; line-height:2; opacity:0.9; margin-bottom:16px;}
   .loc-card .addr b{color:var(--gold-soft); font-weight:600; margin-right:6px;}
-  .map-btn{display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--teal-deep); font-weight:800; font-size:13.5px; padding:11px 20px; border-radius:999px; text-decoration:none;}
+  .map-btn{display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--teal-deep); font-weight:800; font-size:15px; padding:12px 22px; border-radius:999px; text-decoration:none;}
 
-  .org-row{display:flex; flex-direction:column; gap:10px; font-size:12.5px; margin:20px 0 6px;}
+  .org-row{display:flex; flex-direction:column; gap:10px; font-size:14px; margin:20px 0 6px;}
   .org-row div span{font-weight:700; color:var(--teal-deep); margin-right:6px;}
-  .sign-box{margin-top:16px; border:1.5px dashed rgba(18,58,68,0.25); border-radius:12px; padding:16px; font-size:12.5px; color:var(--ink-soft); background:var(--paper);}
+  .sign-box{margin-top:16px; border:1.5px dashed rgba(18,58,68,0.25); border-radius:12px; padding:16px; font-size:14px; color:var(--ink-soft); background:var(--paper);}
   .foot-brand{margin-top:20px; font-size:11px; letter-spacing:0.1em; opacity:0.55; text-align:center;}
 
   /* ================= BOTTOM NAV ================= */
@@ -276,16 +261,11 @@
           </svg>
         </div>
       </div>
-      <div class="cover-cta">
-        <button data-goto="intro">프로젝트 소개 →</button>
-        <button data-goto="schedule">일정표 보기 →</button>
-      </div>
     </div>
   </section>
 
   <!-- ============ PAGE 1: 소개 ============ -->
   <section class="page" id="page-intro">
-    <div class="page-head"><span class="idx">01</span><h3>K예술영재프로젝트 소개</h3></div>
     <div class="page-body">
       <div class="lead">
         <p>2026 K예술영재 프로젝트는 <strong>음악, 무용, 전통예술, 미술</strong> 분야의 재능 있는 예술영재를 전국 단위로 발굴하고, 체계적인 교육과 멘토링, 공연 경험을 통해 미래 예술가로 성장할 수 있도록 지원하는 차세대 예술 인재 육성 프로그램입니다.</p>
@@ -298,7 +278,6 @@
 
   <!-- ============ PAGE 2: 일정표 ============ -->
   <section class="page" id="page-schedule">
-    <div class="page-head"><span class="idx">02</span><h3>일정표</h3></div>
     <div class="page-body">
       <div class="day-tabs">
         <button class="day-tab d1 active" data-day="1">DAY 1<span class="dsub">7/17(금)</span></button>
@@ -346,7 +325,6 @@
 
   <!-- ============ PAGE 3: 교강사 ============ -->
   <section class="page" id="page-staff">
-    <div class="page-head"><span class="idx">03</span><h3>교·강사 소개</h3></div>
     <div class="page-body">
       <div class="tbd-card">
         <span class="ico">🩰</span>
@@ -358,7 +336,6 @@
 
   <!-- ============ PAGE 4: 유의사항 ============ -->
   <section class="page" id="page-notice">
-    <div class="page-head"><span class="idx">04</span><h3>참가자 유의사항</h3></div>
     <div class="page-body">
       <p class="notice-lead">2026 K예술영재 프로젝트는 참가자의 안전한 교육 참여와 원활한 프로그램 운영을 위해 아래 사항을 준수해 주시기 바랍니다.</p>
       <details class="notice-item" open>
@@ -390,7 +367,6 @@
 
   <!-- ============ PAGE 5: 성장노트 ============ -->
   <section class="page" id="page-growth">
-    <div class="page-head"><span class="idx">05</span><h3>성장노트 작성법</h3></div>
     <div class="page-body">
       <div class="gn-grid">
         <div class="gn-card">
@@ -413,7 +389,6 @@
 
   <!-- ============ PAGE 6: 오시는 길 ============ -->
   <section class="page" id="page-location">
-    <div class="page-head"><span class="idx">06</span><h3>오시는 길</h3></div>
     <div class="page-body">
       <div class="loc-card">
         <h4>한국예술영재교육원 광주캠퍼스</h4>
