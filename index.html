@@ -229,7 +229,7 @@
 
   .tl-body{
     display:grid; grid-template-columns:52px repeat(3,1fr); gap:6px;
-    height:640px;
+    height:460px; /* fallback; actual height is set by JS to fit the viewport exactly */
   }
   .tl-axis{
     position:relative; background:var(--paper); border-radius:10px; box-shadow:var(--shadow);
@@ -390,8 +390,10 @@
   /* ---------- location ---------- */
   .loc-card{background:var(--teal-deep); color:var(--cream); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow);}
   .loc-card h4{font-family:var(--serif); margin:0 0 4px; color:var(--gold-soft); font-size:20.5px;}
-  .loc-card .addr{font-size:16.5px; line-height:2; opacity:0.9; margin-bottom:16px;}
-  .loc-card .addr b{color:var(--gold-soft); font-weight:600; margin-right:6px;}
+  .loc-card .addr{font-size:16.5px; line-height:1.6; opacity:0.9; margin-bottom:16px;}
+  .loc-card .addr div{margin-bottom:10px;}
+  .loc-card .addr div:last-child{margin-bottom:0;}
+  .loc-card .addr b{color:var(--gold-soft); font-weight:600;}
   .map-image-wrap{
     background:#fff; border-radius:14px; overflow:hidden; margin-bottom:16px;
     border:1px solid rgba(231,185,92,0.35); box-shadow:0 8px 20px -10px rgba(0,0,0,0.35);
@@ -546,7 +548,7 @@
             <span class="tl-range">9:00~11:00</span>
           </div>
           <div class="tl-block sg-gold" data-start="120" data-end="180" style="flex-grow:60;">
-            <span class="tl-ico">🎉</span><span class="tl-title">오프닝 세리머니</span>
+            <span class="tl-title">오프닝 세리머니</span>
             <span class="tl-range">11:00~12:00</span>
           </div>
           <div class="tl-block sg-gray" data-start="180" data-end="240" style="flex-grow:60;">
@@ -554,11 +556,11 @@
             <span class="tl-range">12:00~13:00</span>
           </div>
           <div class="tl-block sg-pink" data-start="240" data-end="420" style="flex-grow:180;">
-            <span class="tl-ico">🩰</span><span class="tl-title">발레 클라스</span>
+            <span class="tl-title">발레 클라스</span>
             <span class="tl-range">13:00~16:00</span>
           </div>
           <div class="tl-block sg-mint" data-start="420" data-end="600" style="flex-grow:180;">
-            <span class="tl-ico">💃</span><span class="tl-title">발레 레파토리</span>
+            <span class="tl-title">발레 레파토리</span>
             <span class="tl-range">16:00~19:00</span>
           </div>
         </div>
@@ -569,7 +571,7 @@
             <span class="tl-range">9:00~10:00</span>
           </div>
           <div class="tl-block sg-pink" data-start="60" data-end="180" style="flex-grow:120;">
-            <span class="tl-ico">🩰</span><span class="tl-title">발레 클라스</span>
+            <span class="tl-title">발레 클라스</span>
             <span class="tl-range">10:00~12:00</span>
           </div>
           <div class="tl-block sg-gray" data-start="180" data-end="240" style="flex-grow:60;">
@@ -577,16 +579,16 @@
             <span class="tl-range">12:00~13:00</span>
           </div>
           <div class="tl-block sg-mint" data-start="240" data-end="420" style="flex-grow:180;">
-            <span class="tl-ico">💃</span><span class="tl-title">발레 레파토리</span>
+            <span class="tl-title">발레 레파토리</span>
             <span class="tl-range">13:00~16:00</span>
           </div>
           <div class="tl-split" data-start="420" data-end="600" style="flex-grow:180;">
             <div class="tl-block sg-blue" data-start="420" data-end="600">
-              <span class="tl-ico">📖</span><span class="tl-title">발레 클라스의 역사</span>
+              <span class="tl-title">발레 클라스의 역사</span>
               <span class="tl-range">16:00~19:00</span>
             </div>
             <div class="tl-block sg-purple" data-start="420" data-end="600">
-              <span class="tl-ico">🏋️</span><span class="tl-title">피지컬 트레이닝</span>
+              <span class="tl-title">피지컬 트레이닝</span>
               <span class="tl-range">16:00~19:00</span>
             </div>
           </div>
@@ -598,7 +600,7 @@
             <span class="tl-range">9:00~10:00</span>
           </div>
           <div class="tl-block sg-pink" data-start="60" data-end="180" style="flex-grow:120;">
-            <span class="tl-ico">🩰</span><span class="tl-title">발레 클라스</span>
+            <span class="tl-title">발레 클라스</span>
             <span class="tl-range">10:00~12:00</span>
           </div>
           <div class="tl-block sg-gray" data-start="180" data-end="240" style="flex-grow:60;">
@@ -606,11 +608,11 @@
             <span class="tl-range">12:00~13:00</span>
           </div>
           <div class="tl-block sg-mint" data-start="240" data-end="420" style="flex-grow:180;">
-            <span class="tl-ico">💃</span><span class="tl-title">발레 레파토리</span>
+            <span class="tl-title">발레 레파토리</span>
             <span class="tl-range">13:00~16:00</span>
           </div>
           <div class="tl-block sg-gold" data-start="420" data-end="600" style="flex-grow:180;">
-            <span class="tl-ico">🎓</span><span class="tl-title">클로징 세리머니</span>
+            <span class="tl-title">클로징 세리머니</span>
             <span class="tl-range">16:00~19:00</span>
           </div>
         </div>
@@ -951,6 +953,10 @@
     updateArrows(toIdx);
     window.scrollTo(0,0);
     history.replaceState(null,'','#'+name);
+    if(name === 'schedule' && window._fitScheduleTimeline){
+      requestAnimationFrame(()=> window._fitScheduleTimeline());
+      setTimeout(window._fitScheduleTimeline, 120);
+    }
   }
 
   function updateArrows(idx){
@@ -1065,6 +1071,29 @@
     });
 
     setPosition(0);
+
+    function fitHeight(){
+      const page = document.getElementById('page-schedule');
+      const tlBody = document.getElementById('tlBody');
+      if(!page || !tlBody || !page.classList.contains('active')) return;
+      const navbar = document.querySelector('.navbar');
+      const navH = navbar ? navbar.getBoundingClientRect().height : 76;
+      const hint = document.querySelector('.tl-hint');
+      const footnote = page.querySelector('.sched-footnote');
+      const top = tlBody.getBoundingClientRect().top;
+      const belowH = (hint ? hint.offsetHeight : 0) + (footnote ? footnote.offsetHeight : 0);
+      const buffer = 26; // small breathing margin
+      const available = window.innerHeight - top - belowH - navH - buffer;
+      tlBody.style.height = Math.max(320, Math.floor(available)) + 'px';
+    }
+
+    window.addEventListener('resize', fitHeight);
+    window.addEventListener('orientationchange', fitHeight);
+    window._fitScheduleTimeline = fitHeight;
+    fitHeight();
+    // re-fit shortly after in case fonts/images shift layout
+    setTimeout(fitHeight, 80);
+    setTimeout(fitHeight, 300);
   }
   window.addEventListener('DOMContentLoaded', initTimeline);
 </script>
