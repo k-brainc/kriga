@@ -233,7 +233,7 @@
     padding:9px 2px; text-align:center;
     font-family:var(--serif); font-weight:800; font-size:clamp(10px,3vw,12.5px);
   }
-  .tl3-head-time{ background:var(--paper); color:var(--ink-soft); box-shadow:var(--shadow); }
+  .tl3-head-time{ background:var(--paper); color:var(--ink-soft); }
   .tl3-head{ color:#fff; }
   .tl3-head-fri{ background:var(--rose); }
   .tl3-head-sat{ background:var(--teal-mid); }
@@ -245,7 +245,7 @@
     padding:9px 0;
   }
   .tl3-axis{
-    position:relative; background:var(--paper); box-shadow:var(--shadow);
+    position:relative; background:var(--paper);
   }
   .tl3-track{
     position:absolute; left:50%; top:4px; bottom:4px; width:3px;
@@ -259,7 +259,7 @@
   .tl3-hour-first{ transform:translate(-50%,0); }
   .tl3-hour-last{ transform:translate(-50%,-100%); }
 
-  .tl3-day-col{ position:relative; height:100%; box-shadow:var(--shadow); }
+  .tl3-day-col{ position:relative; height:100%; }
   .tl3-block{
     position:absolute; left:0; right:0; cursor:pointer;
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
@@ -273,11 +273,12 @@
     font-family:var(--serif); font-weight:800; color:var(--teal-deep);
     transition:opacity .15s ease, font-size .18s ease, max-height .18s ease, margin-top .18s ease;
   }
+  .tl3-block{ transform-origin:center center; }
+  .tl3-block.tl3-bottom{ transform-origin:center bottom; }
   .tl3-block:hover, .tl3-block.tl3-selected{
     outline:2px solid var(--gold); outline-offset:-2px; z-index:6;
     transform:scale(1.16);
     padding:6% 8%;
-    box-shadow:0 10px 22px -4px rgba(18,58,68,0.45);
   }
   .tl3-block:hover .tl3-title, .tl3-block.tl3-selected .tl3-title{ font-size:clamp(11px,3.6vw,14px); }
   .tl3-block:hover .tl3-range, .tl3-block.tl3-selected .tl3-range{
@@ -287,6 +288,7 @@
   .tl3-split{ position:absolute; left:0; right:0; display:flex; }
   .tl3-split .tl3-block{ position:static; flex:1; height:100%; font-size:clamp(8px,2.5vw,9.5px); padding:2% 1.5%; }
   .tl3-split .tl3-block:hover, .tl3-split .tl3-block.tl3-selected{ transform:scale(1.14); padding:5% 5%; }
+  .tl3-split .tl3-block.tl3-bottom{ transform-origin:center bottom; }
 
   /* ---------- mobile: one-day tab view ---------- */
   .tl3-tabs{
@@ -301,13 +303,13 @@
     background:var(--tab-c); opacity:0.45;
     transition:opacity .15s ease, transform .15s ease;
   }
-  .tl3-tab.active{ opacity:1; transform:translateY(-1px); box-shadow:0 6px 14px -4px rgba(0,0,0,0.4); }
+  .tl3-tab.active{ opacity:1; transform:translateY(-1px); }
 
   @media (max-width: 560px){
     .tl3-hint{ display:none; }
     .tl3-tabs{ display:flex; }
-    .tl3-scroll{ overflow-x:visible; }
-    .tl3-scroll-inner{ min-width:0; }
+    .tl3-scroll{ overflow-x:visible !important; }
+    .tl3-scroll-inner{ min-width:0 !important; }
     .tl3-headrow{ display:flex !important; gap:0; }
     .tl3-head{ display:none !important; }
     .tl3-head.tl3-day-active{ display:block !important; flex:1; }
@@ -485,7 +487,7 @@
 
   /* ---------- traditional-arts additions ---------- */
   .tl3-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px; }
-  .tl3-scroll-inner{ min-width:720px; }
+  .tl3-scroll-inner{ min-width:0; }
   .tl3-head-d1{ background:#D96A42; }
   .tl3-head-d2{ background:#25A0AE; }
   .tl3-head-d3{ background:#8A79B8; }
@@ -594,7 +596,7 @@
     <div class="section-rule"><span>일정표</span></div>
     </div>
     <div class="page-body">
-      <p class="tl3-hint">칸을 누르면 정확한 시간이 표시돼요 · 좌우로 밀어보세요</p>
+      <p class="tl3-hint">칸을 누르면 정확한 시간이 표시돼요</p>
 
       <div class="tl3-tabs" id="tl3Tabs">
         <button type="button" class="tl3-tab" data-day="d1" style="--tab-c:#D96A42">7.29.수</button>
@@ -1258,6 +1260,21 @@
         blocks.forEach(b=> b.classList.remove('tl3-selected'));
         if(!wasSelected) block.classList.add('tl3-selected');
       });
+
+      // avoid overflow when zooming: expand upward if at bottom of column,
+      // and expand leftward if in the rightmost day column
+      const posEl = block.closest('.tl3-split') || block;
+      const top = parseFloat(posEl.style.top) || 0;
+      const height = parseFloat(posEl.style.height) || 0;
+      const isBottom = (top + height) >= 99.5;
+
+      const dayCol = block.closest('.tl3-day-col');
+      const lastDayKey = SCHEDULE_DAYS[SCHEDULE_DAYS.length - 1].key;
+      const isRightmost = dayCol && dayCol.getAttribute('data-day') === lastDayKey;
+
+      const originX = isRightmost ? 'right' : 'center';
+      const originY = isBottom ? 'bottom' : 'center';
+      block.style.transformOrigin = originX + ' ' + originY;
     });
 
     const defaultDay = pickDefaultDay();
@@ -1273,7 +1290,7 @@
       const pagePadBottom = parseFloat(getComputedStyle(page).paddingBottom) || 0;
       const top = body.getBoundingClientRect().top;
       const belowH = (footnote ? footnote.offsetHeight : 0);
-      const buffer = 16;
+      const buffer = 24;
       const available = window.innerHeight - top - belowH - pagePadBottom - buffer;
       body.style.height = Math.max(320, Math.floor(available)) + 'px';
     }
