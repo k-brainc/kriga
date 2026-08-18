@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="2026 K예술영재 프로젝트 전통예술 분야 - 융합창작 수업 과제 안내 및 제출">
+<title>K예술영재 프로젝트 · 전통예술 분야 워크숍 융합창작 수업 과제</title>
+<style>
+  :root{
+    --navy-deep:#0b1526;
+    --navy:#0f1f3d;
+    --navy-mid:#16294d;
+    --navy-line:rgba(255,255,255,0.10);
+    --gold:#c9a961;
+    --gold-soft:#e3cd93;
+    --ivory:#f6f2e8;
+    --text-dim:rgba(246,242,232,0.62);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 700px at 12% -10%, rgba(201,169,97,0.14), transparent 60%),
+      radial-gradient(900px 600px at 100% 110%, rgba(201,169,97,0.10), transparent 55%),
+      linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 55%, var(--navy-mid) 100%);
+    font-family: "Noto Serif KR", "Pretendard", -apple-system, "Malgun Gothic", sans-serif;
+    color: var(--ivory);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 48px 18px;
+  }
+  .frame{
+    width:100%;
+    max-width:640px;
+  }
+  .top-mark{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:28px;
+    opacity:0.9;
+    padding:0 10px;
+  }
+  .top-mark .line{
+    flex:none;
+    width:22px;height:1px;background:var(--gold);opacity:0.6;
+  }
+  .top-mark span{
+    font-size:11.5px;
+    letter-spacing:0.18em;
+    color:var(--gold-soft);
+    font-weight:500;
+    white-space:nowrap;
+  }
+  .card{
+    position:relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border:1px solid var(--navy-line);
+    border-radius:22px;
+    padding: 46px 38px 38px;
+    box-shadow: 0 30px 70px -25px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
+    backdrop-filter: blur(6px);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0;left:50%;
+    transform:translateX(-50%);
+    width:56px;height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:6px 16px;
+    border:1px solid rgba(201,169,97,0.45);
+    border-radius:999px;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    color:var(--gold-soft);
+    background:rgba(201,169,97,0.08);
+    margin-bottom:18px;
+  }
+  .pill::before{
+    content:"";
+    width:5px;height:5px;border-radius:50%;
+    background:var(--gold);
+  }
+  .division{
+    font-size:14.5px;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+    margin:0 0 6px;
+  }
+  h1{
+    font-size:clamp(24px, 5.4vw, 32px);
+    line-height:1.35;
+    font-weight:700;
+    margin:0 0 22px;
+    color:var(--ivory);
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--gold-soft);
+  }
+  .divider{
+    height:1px;
+    background:linear-gradient(90deg, var(--navy-line), transparent 80%);
+    margin:22px 0 24px;
+  }
+  .guide{
+    font-size:15px;
+    line-height:1.85;
+    color:rgba(246,242,232,0.86);
+    margin:0 0 26px;
+  }
+  .guide strong{
+    color:var(--gold-soft);
+    font-weight:600;
+  }
+  .steps{
+    list-style:none;
+    margin:0 0 30px;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .steps li{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    font-size:14.5px;
+    line-height:1.65;
+    color:rgba(246,242,232,0.86);
+  }
+  .steps .num{
+    flex:none;
+    width:24px;height:24px;
+    border-radius:50%;
+    border:1px solid rgba(201,169,97,0.5);
+    color:var(--gold-soft);
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+    margin-top:1px;
+  }
+  .deadline-box{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    background:rgba(201,169,97,0.09);
+    border:1px solid rgba(201,169,97,0.3);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:30px;
+  }
+  .deadline-box .label{
+    font-size:12px;
+    letter-spacing:0.1em;
+    color:var(--gold-soft);
+    margin-bottom:4px;
+  }
+  .deadline-box .value{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory);
+  }
+  .deadline-box .email{
+    font-size:14.5px;
+    color:rgba(246,242,232,0.86);
+    word-break:break-all;
+  }
+  .dl-caption{
+    font-size:13.5px;
+    color:var(--text-dim);
+    margin:0 0 16px;
+  }
+  .dl-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    padding:16px 20px;
+    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    color:#1a1305;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.01em;
+    border-radius:12px;
+    text-decoration:none;
+    box-shadow: 0 14px 30px -12px rgba(201,169,97,0.55);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .dl-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 18px 36px -12px rgba(201,169,97,0.65);
+  }
+  .dl-btn .arrow{
+    font-size:16px;
+  }
+  .dl-filename{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--text-dim);
+    margin-top:10px;
+    letter-spacing:0.02em;
+  }
+  footer{
+    text-align:center;
+    margin-top:30px;
+    font-size:12px;
+    letter-spacing:0.06em;
+    color:rgba(246,242,232,0.4);
+  }
+  footer .dot{
+    margin:0 8px;
+    opacity:0.6;
+  }
+  @media (max-width:480px){
+    .card{padding:36px 22px 30px;}
+    .deadline-box{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="top-mark">
+      <span class="line"></span>
+      <span>K예술영재 프로젝트 · 전통예술 분야</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="card">
+      <div class="pill">수업 과제</div>
+      <p class="division">전통예술 분야 워크숍</p>
+      <h1>융합창작 수업 <em>과제</em></h1>
+
+      <p class="guide">
+        이메일 또는 하단 링크를 통해 과제를 다운 받은 후,<br>
+        <strong>8/21까지</strong> 수행한 과제를 사진으로 촬영하여<br>
+        메일로 제출하여 주시기 바랍니다.
+      </p>
+
+      <div class="divider"></div>
+
+      <ul class="steps">
+        <li><span class="num">1</span><span>하단 버튼을 눌러 과제 파일(PDF)을 다운로드합니다.</span></li>
+        <li><span class="num">2</span><span>안내에 따라 과제를 수행합니다.</span></li>
+        <li><span class="num">3</span><span>수행한 과제를 사진으로 촬영합니다.</span></li>
+        <li><span class="num">4</span><span>촬영한 사진을 아래 이메일로 제출합니다.</span></li>
+      </ul>
+
+      <div class="deadline-box">
+        <div>
+          <div class="label">제출 마감</div>
+          <div class="value">8월 21일까지</div>
+        </div>
+        <div>
+          <div class="label">제출 메일</div>
+          <div class="email">jeds1213@naver.com</div>
+        </div>
+      </div>
+
+      <p class="dl-caption">융합창작 수업 과제를 아래 버튼에서 내려받으실 수 있습니다.</p>
+      <a class="dl-btn" href="http://k-brainc.github.io/kriga/t-aids_2.pdf" target="_blank" rel="noopener">
+        <span class="arrow">⬇</span>과제 다운로드
+      </a>
+      <div class="dl-filename">t-aids_2.pdf</div>
+    </div>
+
+    <footer>한국예술영재교육연구원<span class="dot">·</span>2026 K예술영재 프로젝트</footer>
+  </div>
+</body>
+</html>
