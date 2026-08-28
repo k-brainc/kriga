@@ -310,7 +310,19 @@ function setup(key){
   let started = false;
 
   function startPlayback(){
-    if(started) return;
+    if(started){
+      // already loaded once — just rewind to the start and play again
+      audio.currentTime = 0;
+      status.style.display = 'none';
+      audio.style.display = 'block';
+      audio.play().catch(() => {
+        status.classList.remove('loading');
+        status.style.display = 'flex';
+        status.textContent = '자동 재생이 막혔어요 — 재생 바의 ▶ 버튼을 눌러주세요.';
+        audio.style.display = 'block';
+      });
+      return;
+    }
     started = true;
     status.classList.add('loading');
     status.style.display = 'flex';
@@ -323,6 +335,7 @@ function setup(key){
     // still counts as user-gesture-triggered since it was started from the tile click
     audio.addEventListener('canplay', function onReady(){
       audio.removeEventListener('canplay', onReady);
+      audio.currentTime = 0;
       status.style.display = 'none';
       audio.style.display = 'block';
       audio.play().catch(() => {
