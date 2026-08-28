@@ -141,7 +141,19 @@
   }
   .player-title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:15px;color:var(--teal-deep);flex:1 1 220px;}
   .player-title small{display:block;font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ink-soft);font-size:12px;margin-top:3px;}
-  .drive-player{flex:2 1 320px;min-width:240px;height:76px;border:none;border-radius:10px;background:#f2ede0;}
+  .drive-audio{flex:2 1 320px;min-width:240px;height:38px;}
+  .player-status{
+    flex:2 1 320px;min-width:240px;
+    display:flex;align-items:center;gap:9px;
+    font-size:12.5px;color:var(--ink-soft);
+    height:38px;
+  }
+  .player-status.loading::before{
+    content:"";width:14px;height:14px;border-radius:50%;
+    border:2px solid var(--terracotta-soft);border-top-color:var(--terracotta);
+    animation:spin .7s linear infinite;flex:0 0 auto;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
   .fallback-link{
     font-size:12.5px;color:var(--terracotta);text-decoration:none;font-weight:700;
     border-bottom:1px dashed var(--terracotta-soft);white-space:nowrap;
@@ -218,9 +230,11 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">A반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_A반.mp3</small></div>
-        <iframe class="drive-player" id="frameA" data-src="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/preview" allow="autoplay" loading="lazy"></iframe>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
-        <div class="audio-note">재생 바 안의 ▶ 버튼을 눌러 들으세요. (Google Drive 임베드 특성상 스크립트로 재생 버튼까지 자동으로 눌러줄 수는 없어요)</div>
+        <div class="player-status" id="statusA">타일을 누르면 자동으로 재생됩니다.</div>
+        <audio class="drive-audio" id="audioA" preload="none" controls style="display:none;">
+          <source data-src="https://www.dropbox.com/scl/fi/ybg2hslkyb5xj27k8u35n/K-_-_-_A.mp3?rlkey=x41jpyjbuiqbnnuck1qm2w0g5&amp;st=i8tzmcss&amp;dl=1" type="audio/mpeg">
+        </audio>
+        <a class="fallback-link" href="https://www.dropbox.com/scl/fi/ybg2hslkyb5xj27k8u35n/K-_-_-_A.mp3?rlkey=x41jpyjbuiqbnnuck1qm2w0g5&amp;st=i8tzmcss&amp;dl=0" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
       </div>
       <div class="teams" id="teamsA"></div>
     </div>
@@ -230,9 +244,11 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">B반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_B반.mp3</small></div>
-        <iframe class="drive-player" id="frameB" data-src="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/preview" allow="autoplay" loading="lazy"></iframe>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
-        <div class="audio-note">재생 바 안의 ▶ 버튼을 눌러 들으세요. (Google Drive 임베드 특성상 스크립트로 재생 버튼까지 자동으로 눌러줄 수는 없어요)</div>
+        <div class="player-status" id="statusB">타일을 누르면 자동으로 재생됩니다.</div>
+        <audio class="drive-audio" id="audioB" preload="none" controls style="display:none;">
+          <source data-src="https://www.dropbox.com/scl/fi/182yrjg37qt1041j0dml8/K-_-_-_B.mp3?rlkey=8c4a3ordtuagxcdhpmsz79wky&amp;st=hmazljoc&amp;dl=1" type="audio/mpeg">
+        </audio>
+        <a class="fallback-link" href="https://www.dropbox.com/scl/fi/182yrjg37qt1041j0dml8/K-_-_-_B.mp3?rlkey=8c4a3ordtuagxcdhpmsz79wky&amp;st=hmazljoc&amp;dl=0" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
       </div>
       <div class="teams" id="teamsB"></div>
     </div>
@@ -286,8 +302,42 @@ renderTeams('B');
 function setup(key){
   const tile = document.getElementById('tile' + key);
   const panel = document.getElementById('panel' + key);
-  const frame = document.getElementById('frame' + key);
+  const audio = document.getElementById('audio' + key);
+  const source = audio.querySelector('source');
+  const status = document.getElementById('status' + key);
   const label = tile.querySelector('.playlabel');
+  let started = false;
+
+  function startPlayback(){
+    if(started) return;
+    started = true;
+    status.classList.add('loading');
+    status.style.display = 'flex';
+    status.textContent = '음원을 불러오는 중…';
+
+    source.src = source.dataset.src;
+    audio.load();
+
+    // wait for enough data to actually play smoothly, then auto-play —
+    // still counts as user-gesture-triggered since it was started from the tile click
+    audio.addEventListener('canplay', function onReady(){
+      audio.removeEventListener('canplay', onReady);
+      status.style.display = 'none';
+      audio.style.display = 'block';
+      audio.play().catch(() => {
+        status.classList.remove('loading');
+        status.style.display = 'flex';
+        status.textContent = '자동 재생이 막혔어요 — 재생 바의 ▶ 버튼을 눌러주세요.';
+        audio.style.display = 'block';
+      });
+    }, { once:true });
+
+    audio.addEventListener('error', () => {
+      status.classList.remove('loading');
+      status.style.display = 'flex';
+      status.textContent = '음원을 불러오지 못했어요 — 위 "새 창에서 열기" 링크로 확인해 주세요.';
+    }, { once:true });
+  }
 
   function toggle(){
     const opening = !panel.classList.contains('open');
@@ -296,10 +346,10 @@ function setup(key){
     tile.setAttribute('aria-expanded', opening ? 'true' : 'false');
     label.textContent = opening ? '패널 닫기' : '음원 재생';
     if(opening){
-      if(!frame.src){ frame.src = frame.dataset.src; }
+      startPlayback();
       panel.scrollIntoView({behavior:'smooth', block:'nearest'});
     } else {
-      frame.src = ''; // stop playback by clearing the embed
+      audio.pause();
     }
   }
 
