@@ -141,7 +141,7 @@
   }
   .player-title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:15px;color:var(--teal-deep);flex:1 1 220px;}
   .player-title small{display:block;font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ink-soft);font-size:12px;margin-top:3px;}
-  audio{flex:2 1 320px;min-width:240px;height:38px;}
+  .drive-player{flex:2 1 320px;min-width:240px;height:76px;border:none;border-radius:10px;background:#f2ede0;}
   .fallback-link{
     font-size:12.5px;color:var(--terracotta);text-decoration:none;font-weight:700;
     border-bottom:1px dashed var(--terracotta-soft);white-space:nowrap;
@@ -213,11 +213,9 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">A반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_A반.mp3</small></div>
-        <audio id="audioA" controls preload="none">
-          <source src="https://drive.google.com/uc?export=download&id=1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX" type="audio/mpeg">
-        </audio>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/view" target="_blank" rel="noopener">재생이 안 되면 Drive에서 열기 ↗</a>
-        <div class="audio-note">브라우저에서 재생이 되지 않으면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
+        <iframe class="drive-player" id="frameA" data-src="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/preview" allow="autoplay" loading="lazy"></iframe>
+        <a class="fallback-link" href="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
+        <div class="audio-note">재생 바가 보이면 재생 버튼(▶)을 눌러주세요. 아이콘이 안 보이면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
       </div>
       <div class="teams" id="teamsA"></div>
     </div>
@@ -227,11 +225,9 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">B반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_B반.mp3</small></div>
-        <audio id="audioB" controls preload="none">
-          <source src="https://drive.google.com/uc?export=download&id=1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v" type="audio/mpeg">
-        </audio>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/view" target="_blank" rel="noopener">재생이 안 되면 Drive에서 열기 ↗</a>
-        <div class="audio-note">브라우저에서 재생이 되지 않으면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
+        <iframe class="drive-player" id="frameB" data-src="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/preview" allow="autoplay" loading="lazy"></iframe>
+        <a class="fallback-link" href="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
+        <div class="audio-note">재생 바가 보이면 재생 버튼(▶)을 눌러주세요. 아이콘이 안 보이면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
       </div>
       <div class="teams" id="teamsB"></div>
     </div>
@@ -286,7 +282,7 @@ renderTeams('B');
 function setup(key){
   const tile = document.getElementById('tile' + key);
   const panel = document.getElementById('panel' + key);
-  const audio = document.getElementById('audio' + key);
+  const frame = document.getElementById('frame' + key);
   const label = tile.querySelector('.playlabel');
 
   function toggle(){
@@ -296,9 +292,10 @@ function setup(key){
     tile.setAttribute('aria-expanded', opening ? 'true' : 'false');
     label.textContent = opening ? '패널 닫기' : '음원 재생';
     if(opening){
+      if(!frame.src){ frame.src = frame.dataset.src; }
       panel.scrollIntoView({behavior:'smooth', block:'nearest'});
     } else {
-      audio.pause();
+      frame.src = ''; // stop playback by clearing the embed
     }
   }
 
