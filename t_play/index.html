@@ -141,7 +141,7 @@
   }
   .player-title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:15px;color:var(--teal-deep);flex:1 1 220px;}
   .player-title small{display:block;font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ink-soft);font-size:12px;margin-top:3px;}
-  .drive-player{flex:2 1 320px;min-width:240px;height:76px;border:none;border-radius:10px;background:#f2ede0;}
+  audio{flex:2 1 320px;min-width:240px;height:38px;}
   .fallback-link{
     font-size:12.5px;color:var(--terracotta);text-decoration:none;font-weight:700;
     border-bottom:1px dashed var(--terracotta-soft);white-space:nowrap;
@@ -160,15 +160,21 @@
   .team-num{font-family:'Noto Serif KR',serif;font-weight:900;font-size:17px;color:var(--terracotta);}
   .team-room{font-size:11px;color:var(--ink-soft);font-weight:500;}
 
-  .role-line{margin-bottom:9px;font-size:12.5px;line-height:1.6;}
+  .role-line{
+    display:flex;align-items:flex-start;gap:7px;
+    margin-bottom:9px;font-size:12.5px;line-height:1.6;
+  }
   .role-line:last-child{margin-bottom:0;}
   .role-tag{
-    display:inline-block;min-width:16px;text-align:center;
+    flex:0 0 auto;margin-top:1px;white-space:nowrap;text-align:center;
     background:var(--teal-deep);color:var(--gold-soft);
     font-weight:700;font-size:10.5px;
-    border-radius:5px;padding:1px 5px;margin-right:6px;
+    border-radius:5px;padding:2px 7px;
   }
-  .role-names{color:var(--ink);}
+  .role-names{
+    flex:1 1 auto;color:var(--ink);
+    word-break:keep-all;overflow-wrap:break-word;
+  }
 
   footer{text-align:center;margin-top:56px;font-size:11.5px;color:var(--ink-soft);}
   footer .ln{width:36px;height:1px;background:var(--terracotta-soft);margin:0 auto 14px;}
@@ -180,7 +186,7 @@
   <header>
     <div class="eyebrow"><span class="dot"></span>K예술영재 프로젝트 · 전통예술분야</div>
     <h1>융합창작 <span>음원 아카이브</span></h1>
-    <p class="desc">8월 17일(월), <b>A반</b>과 <b>B반</b> 학생들이 팀별로 함께 만든 융합창작 결과물을 들어보세요.<br>타일을 눌러 음원을 재생하고, 팀별 참여 학생 명단을 확인할 수 있습니다.</p>
+    <p class="desc"><b>A반</b>과 <b>B반</b> 학생들이 팀별로 함께 만든 융합창작 결과물을 들어보세요.<br>타일을 눌러 음원을 재생하고, 팀별 참여 학생 명단을 확인할 수 있습니다.</p>
   </header>
 
   <div class="tiles">
@@ -213,9 +219,11 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">A반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_A반.mp3</small></div>
-        <iframe class="drive-player" id="frameA" data-src="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/preview" allow="autoplay" loading="lazy"></iframe>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
-        <div class="audio-note">재생 바가 보이면 재생 버튼(▶)을 눌러주세요. 아이콘이 안 보이면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
+        <audio id="audioA" controls preload="none">
+          <source data-src="https://drive.google.com/uc?export=download&id=1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX" type="audio/mpeg">
+        </audio>
+        <a class="fallback-link" href="https://drive.google.com/file/d/1T9JuijfbpdPysHdSWtBs6LZQOuWSEBmX/view" target="_blank" rel="noopener">재생이 안 되면 Drive에서 열기 ↗</a>
+        <div class="audio-note">브라우저에서 재생이 되지 않으면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
       </div>
       <div class="teams" id="teamsA"></div>
     </div>
@@ -225,9 +233,11 @@
     <div class="panel-inner">
       <div class="player-card">
         <div class="player-title">B반 융합창작 음원<small>K예술영재 프로젝트_전통예술_융합창작_B반.mp3</small></div>
-        <iframe class="drive-player" id="frameB" data-src="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/preview" allow="autoplay" loading="lazy"></iframe>
-        <a class="fallback-link" href="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/view" target="_blank" rel="noopener">새 창에서 열기 ↗</a>
-        <div class="audio-note">재생 바가 보이면 재생 버튼(▶)을 눌러주세요. 아이콘이 안 보이면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
+        <audio id="audioB" controls preload="none">
+          <source data-src="https://drive.google.com/uc?export=download&id=1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v" type="audio/mpeg">
+        </audio>
+        <a class="fallback-link" href="https://drive.google.com/file/d/1OzuraMtzxwVFG9zV7M6X1p21aROWvq5v/view" target="_blank" rel="noopener">재생이 안 되면 Drive에서 열기 ↗</a>
+        <div class="audio-note">브라우저에서 재생이 되지 않으면 위 링크로 Google Drive에서 바로 들을 수 있습니다.</div>
       </div>
       <div class="teams" id="teamsB"></div>
     </div>
@@ -245,19 +255,19 @@ const DATA = {
   A: {
     room: "134호 / 113호 / 116호 / 143호",
     teams: [
-      { num: 1, room: "134호", roles: [["가","김다윤, 김다엘, 이연우, 장서영, 김영우, 장승주"],["타","변지환"]] },
-      { num: 2, room: "113호", roles: [["가","정다인, 장세린, 김재희"],["타","이선형"],["연","조다원"]] },
-      { num: 3, room: "116호", roles: [["해","김민진, 이시연, 윤하원, 장인하, 송예린, 김유현"],["타","박하임"]] },
-      { num: 4, room: "143호", roles: [["판","권운, 이슬아, 최아라, 조여원"],["타","박예준"]] },
+      { num: 1, room: "134호", roles: [["가야금","김다윤, 김다엘, 이연우, 장서영, 김영우, 장승주"],["타악","변지환"]] },
+      { num: 2, room: "113호", roles: [["가야금","정다인, 장세린, 김재희"],["타악","이선형"],["연희","조다원"]] },
+      { num: 3, room: "116호", roles: [["해금","김민진, 이시연, 윤하원, 장인하, 송예린, 김유현"],["타악","박하임"]] },
+      { num: 4, room: "143호", roles: [["판소리","권운, 이슬아, 최아라, 조여원"],["타악","박예준"]] },
     ]
   },
   B: {
     room: "134호 / 113호 / 116호 / 143호",
     teams: [
-      { num: 1, room: "134호", roles: [["가","장지혜"],["거","김여완, 반혜민, 이신우"],["연","김도영, 이헌주"]] },
-      { num: 2, room: "113호", roles: [["해","김나연, 김규리, 강나윤, 김시현"],["연","이주환, 박별"]] },
-      { num: 3, room: "116호", roles: [["타","임건우, 고윤서, 이성문, 최정안"],["연","임태희, 이서연"]] },
-      { num: 4, room: "143호", roles: [["판","김보빈, 서현지"],["연","하늘, 최수인"]] },
+      { num: 1, room: "134호", roles: [["가야금","장지혜"],["거문고","김여완, 반혜민, 이신우"],["연희","김도영, 이헌주"]] },
+      { num: 2, room: "113호", roles: [["해금","김나연, 김규리, 강나윤, 김시현"],["연희","이주환, 박별"]] },
+      { num: 3, room: "116호", roles: [["타악","임건우, 고윤서, 이성문, 최정안"],["연희","임태희, 이서연"]] },
+      { num: 4, room: "143호", roles: [["판소리","김보빈, 서현지"],["연희","하늘, 최수인"]] },
     ]
   }
 };
@@ -282,7 +292,8 @@ renderTeams('B');
 function setup(key){
   const tile = document.getElementById('tile' + key);
   const panel = document.getElementById('panel' + key);
-  const frame = document.getElementById('frame' + key);
+  const audio = document.getElementById('audio' + key);
+  const source = audio.querySelector('source');
   const label = tile.querySelector('.playlabel');
 
   function toggle(){
@@ -292,10 +303,17 @@ function setup(key){
     tile.setAttribute('aria-expanded', opening ? 'true' : 'false');
     label.textContent = opening ? '패널 닫기' : '음원 재생';
     if(opening){
-      if(!frame.src){ frame.src = frame.dataset.src; }
+      if(!audio.src && !source.src){
+        source.src = source.dataset.src;
+        audio.load();
+      }
+      // play() called directly inside the click handler so browsers treat
+      // it as a user-gesture-triggered play and allow it without extra clicks
+      const p = audio.play();
+      if(p && p.catch){ p.catch(() => { /* autoplay blocked — user presses the visible controls instead */ }); }
       panel.scrollIntoView({behavior:'smooth', block:'nearest'});
     } else {
-      frame.src = ''; // stop playback by clearing the embed
+      audio.pause();
     }
   }
 
