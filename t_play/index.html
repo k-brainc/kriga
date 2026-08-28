@@ -208,7 +208,6 @@
         <div class="tile-label">A반</div>
         <div class="tile-badge">4개 팀 협업</div>
       </div>
-      <div class="tile-sub">융합창작 (134호 이재하T) · 17:00</div>
       <button class="playbtn" type="button"><span class="ico"></span><span class="playlabel">음원 재생</span></button>
       <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
@@ -219,7 +218,6 @@
         <div class="tile-label">B반</div>
         <div class="tile-badge">4개 팀 협업</div>
       </div>
-      <div class="tile-sub">융합창작 (134호 이재하T) · 15:00</div>
       <button class="playbtn" type="button"><span class="ico"></span><span class="playlabel">음원 재생</span></button>
       <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
@@ -299,6 +297,9 @@ function renderTeams(key){
 renderTeams('A');
 renderTeams('B');
 
+const controllers = {};
+let openKey = null;
+
 function setup(key){
   const tile = document.getElementById('tile' + key);
   const panel = document.getElementById('panel' + key);
@@ -339,19 +340,35 @@ function setup(key){
     }, { once:true });
   }
 
+  function close(){
+    panel.classList.remove('open');
+    tile.classList.remove('active');
+    tile.setAttribute('aria-expanded', 'false');
+    label.textContent = '음원 재생';
+    audio.pause();
+  }
+
+  function open(){
+    panel.classList.add('open');
+    tile.classList.add('active');
+    tile.setAttribute('aria-expanded', 'true');
+    label.textContent = '패널 닫기';
+    startPlayback();
+    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
   function toggle(){
-    const opening = !panel.classList.contains('open');
-    panel.classList.toggle('open', opening);
-    tile.classList.toggle('active', opening);
-    tile.setAttribute('aria-expanded', opening ? 'true' : 'false');
-    label.textContent = opening ? '패널 닫기' : '음원 재생';
-    if(opening){
-      startPlayback();
-      panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+    if(openKey === key){
+      close();
+      openKey = null;
     } else {
-      audio.pause();
+      if(openKey && controllers[openKey]){ controllers[openKey].close(); }
+      open();
+      openKey = key;
     }
   }
+
+  controllers[key] = { open, close };
 
   tile.addEventListener('click', toggle);
   tile.addEventListener('keydown', e => {
