@@ -338,7 +338,7 @@
         const meta = FIELD_META[f];
         const d = dataByField[f] || {};
         const badge = d.survey
-          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'}</span>`
+          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'} [D열 원본값: "${d.rawStatus}"]</span>`
           : '';
         return `<div class="card" style="--accent:${meta.color}">
           <div class="corner"></div>
@@ -370,7 +370,7 @@
     }
 
     const tabParam = SHEET_TAB ? `&sheet=${encodeURIComponent(SHEET_TAB)}` : '';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json${tabParam}&_=${Date.now()}`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1${tabParam}&_=${Date.now()}`;
 
     try{
       const res = await fetch(url, { cache: 'no-store' });
@@ -379,17 +379,12 @@
 
       const cols = json.table.cols.map(c => c.label || '');
       const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v ?? '') : ''));
+      console.log('[디버그] 시트 헤더:', cols);
+      console.log('[디버그] 시트 행:', rows);
 
-      let fieldCol = findCol(cols, ['분야']);
-      let surveyCol = findCol(cols, ['만족도']);
-      let reportCol = findCol(cols, ['분석', '보고서']);
-      let statusCol = findCol(cols, ['상태']);
-
-      // 헤더 라벨을 못 찾으면 기본 위치(A,B,C,D)로 대체
-      if(fieldCol === -1) fieldCol = 0;
-      if(surveyCol === -1) surveyCol = 1;
-      if(reportCol === -1) reportCol = 2;
-      if(statusCol === -1) statusCol = 3;
+      // 헤더 자동 인식에 기대지 않고 항상 고정 위치로 읽습니다: A=분야, B=만족도조사 링크, C=분석보고서 링크, D=상태
+      const fieldCol = 0, surveyCol = 1, reportCol = 2, statusCol = 3;
+      console.log('[디버그] 컬럼 인덱스(고정) - 분야:', fieldCol, '만족도:', surveyCol, '분석:', reportCol, '상태:', statusCol);
 
       const dataByField = {};
       rows.forEach(row=>{
@@ -399,6 +394,7 @@
           survey: (row[surveyCol] || '').toString().trim(),
           report: (row[reportCol] || '').toString().trim(),
           open: isOpen(row[statusCol]),
+          rawStatus: row[statusCol] === undefined ? 'undefined (열이 없음)' : row[statusCol] === '' ? '(빈 값)' : String(row[statusCol]),
         };
       });
 
