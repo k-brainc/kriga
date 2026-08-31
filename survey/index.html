@@ -103,9 +103,12 @@
     text-transform:uppercase;
     margin-bottom:6px;
   }
-  .status-badge{
-    position:absolute;
-    top:16px; right:16px;
+  .btn-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn-status{
     font-size:11px;
     font-weight:700;
     letter-spacing:.02em;
@@ -113,13 +116,13 @@
     border-radius:999px;
     text-transform:none;
   }
-  .status-badge.is-open{
-    background:#E7F3E2;
-    color:#3E7A34;
+  .btn-status.is-open{
+    background:rgba(62,122,52,.14);
+    color:#2C5A26;
   }
-  .status-badge.is-closed{
-    background:#F3E4E0;
-    color:#A5432F;
+  .btn-status.is-closed{
+    background:rgba(165,67,47,.14);
+    color:#7A2E1C;
   }
   .card h2{
     font-family:'Noto Serif KR', serif;
@@ -319,8 +322,10 @@
     if(!url){
       return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">준비중</span></span>`;
     }
+    const statusTag = `<span class="btn-status ${open ? 'is-open' : 'is-closed'}">${open ? '진행중' : '마감'}</span>`;
     return `<a class="link-btn" href="${url}" target="_blank" rel="noopener">
-      <span>만족도 조사 문항</span><span class="arrow">→</span>
+      <span>만족도 조사 문항</span>
+      <span class="btn-right">${statusTag}<span class="arrow">→</span></span>
     </a>`;
   }
 
@@ -332,12 +337,8 @@
       ${fields.map(f=>{
         const meta = FIELD_META[f];
         const d = dataByField[f] || {};
-        const badge = d.survey
-          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'}</span>`
-          : '';
         return `<div class="card" style="--accent:${meta.color}">
           <div class="corner"></div>
-          ${badge}
           <div class="field-label">${f}</div>
           <h2>${f} 분야</h2>
           <div class="link-row">
