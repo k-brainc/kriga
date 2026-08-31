@@ -319,11 +319,7 @@
     if(!url){
       return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">준비중</span></span>`;
     }
-    if(!open){
-      return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">마감</span></span>`;
-    }
-    const gateUrl = `survey.html?field=${encodeURIComponent(fieldName)}`;
-    return `<a class="link-btn" href="${gateUrl}" target="_blank" rel="noopener">
+    return `<a class="link-btn" href="${url}" target="_blank" rel="noopener">
       <span>만족도 조사 문항</span><span class="arrow">→</span>
     </a>`;
   }
