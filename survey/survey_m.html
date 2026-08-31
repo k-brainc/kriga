@@ -333,20 +333,6 @@
 
 <div id="ribbonTrack"><div id="ribbonFill"></div></div>
 
-<div class="stage" id="closedScreen" style="display:none;">
-  <div class="intro-panel" style="text-align:center;">
-    <span class="corner corner-tl"></span><span class="corner corner-tr"></span><span class="corner corner-bl"></span><span class="corner corner-br"></span>
-    <div class="lockup-text">
-      <div class="lockup-year">2026</div>
-      <div class="lockup-name">K예술영재 프로젝트</div>
-      <div class="lockup-sub-row"><span class="lockup-line"></span><span class="lockup-sub">음악 분야 워크숍</span><span class="lockup-line"></span></div>
-    </div>
-    <h1 class="title">설문이 마감되었습니다</h1>
-    <div class="rule"></div>
-    <p class="intro-body" id="closedMessage">소중한 시간 내어 참여해주셔서 감사합니다.<br>모든 응답은 다음 워크숍을 준비하는 데<br>귀하게 쓰이겠습니다.</p>
-  </div>
-</div>
-
 <div class="stage" id="surveyStage">
   <form id="surveyForm">
     <div id="slidesWrap">
@@ -631,9 +617,9 @@
       <!-- Slide 10 : Thank you -->
       <section class="slide thankyou" data-slide="10">
         <span class="corner corner-tl small"></span><span class="corner corner-tr small"></span><span class="corner corner-bl small"></span><span class="corner corner-br small"></span>
-        <div class="flourish">❦</div>
-        <h2>감사합니다</h2>
-        <p>설문이 성공적으로 제출되었습니다.<br>여러분의 이야기가 다음 워크숍의 무대를 더 아름답게 만들어줄 거예요.</p>
+        <div class="flourish" id="finalFlourish">❦</div>
+        <h2 id="finalTitle">감사합니다</h2>
+        <p id="finalMessage">설문이 성공적으로 제출되었습니다.<br>여러분의 이야기가 다음 워크숍의 무대를 더 아름답게 만들어줄 거예요.</p>
       </section>
 
     </div>
@@ -649,22 +635,6 @@
 </div>
 
 <script>
-  /* ============================================================
-     설문 마감 설정
-     - 아래 DEADLINE에 마감 일시를 넣으면 그 시각 이후 접속자에게는
-       설문 대신 "마감되었습니다" 화면이 표시됩니다.
-     - 형식: 'YYYY-MM-DDTHH:MM:SS' (예: '2026-08-31T23:59:59')
-     - 비워두면(=''), 마감 기능이 꺼진 상태로 설문이 항상 열려 있습니다.
-     ============================================================ */
-  const SURVEY_DEADLINE = '2026-08-26T00:00:00'; // 예: '2026-08-31T23:59:59'
-
-  if(SURVEY_DEADLINE && new Date() > new Date(SURVEY_DEADLINE)){
-    document.getElementById('surveyStage').style.display = 'none';
-    document.getElementById('ribbonTrack').style.display = 'none';
-    document.getElementById('bottomNav').style.display = 'none';
-    document.getElementById('closedScreen').style.display = 'flex';
-  } else {
-
   const form = document.getElementById('surveyForm');
   const slides = Array.from(document.querySelectorAll('.slide'));
   const totalContentSlides = slides.length - 2; // excludes intro(0) and thankyou(last)
@@ -776,11 +746,60 @@
     if(current > 0) showSlide(current - 1);
   });
 
-  function submitSurvey(){
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx2Bvk9TikEn_tBScou_IM6WZCS7UejWZ0KprbwLRQiFrhj13V8Tdkl974MIeSKP7R3/exec';
+  /* ============================================================
+     설문 오픈/마감 상태 확인 (구글시트 연동)
+     - 시트: K예술영재 프로젝트_워크숍 만족도 조사 ("조사 링크" 탭)
+     - D열(상태) 값이 "마감"이면 제출을 막습니다. 그 외(진행/공백/기타)는 오픈으로 처리합니다.
+     - 문항 열람은 항상 가능하며, 제출 시점에만 상태를 확인합니다.
+     ============================================================ */
+  const LINK_SHEET_ID = '1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310';
+  const LINK_SHEET_TAB = '조사 링크';
+  const FIELD_NAME = '음악';
+
+  async function isSurveyOpen(){
+    try{
+      const url = `https://docs.google.com/spreadsheets/d/${LINK_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(LINK_SHEET_TAB)}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v ?? '') : ''));
+      for(const row of rows){
+        const field = (row[0] || '').toString().trim();
+        if(field === FIELD_NAME){
+          const status = (row[3] || '').toString().trim();
+          return status !== '마감';
+        }
+      }
+      return true; // 분야를 못 찾으면 안전하게 오픈으로 처리
+    }catch(err){
+      console.error('상태 확인 실패, 기본값(오픈)으로 진행합니다.', err);
+      return true; // 확인 실패 시에도 응답 제출은 막지 않음
+    }
+  }
+
+  function showClosedResult(){
+    document.getElementById('finalFlourish').textContent = '✕';
+    document.getElementById('finalTitle').textContent = '제출이 마감되었습니다';
+    document.getElementById('finalMessage').innerHTML = '설문이 마감되어 제출되지 않습니다.<br>소중한 의견 감사드리며, 이번 조사는 더 이상 응답을 받고 있지 않습니다.';
+    showSlide(slides.length - 1);
+  }
+
+  async function submitSurvey(){
     const loading = document.getElementById('loading');
     bottomNav.classList.add('hidden');
+    loading.textContent = '제출 여부를 확인하는 중입니다...';
     loading.style.display = 'block';
+
+    const open = await isSurveyOpen();
+    if(!open){
+      loading.style.display = 'none';
+      alert('설문이 마감되어 제출되지 않습니다.');
+      showClosedResult();
+      return;
+    }
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx2Bvk9TikEn_tBScou_IM6WZCS7UejWZ0KprbwLRQiFrhj13V8Tdkl974MIeSKP7R3/exec';
+    loading.textContent = '제출 중입니다. 잠시만 기다려주세요...';
 
     fetch(scriptURL, { method:'POST', body: new FormData(form) })
       .then(()=>{
@@ -796,8 +815,6 @@
   }
 
   showSlide(0);
-
-  } // end SURVEY_DEADLINE else block
 </script>
 </body>
 </html>
