@@ -274,48 +274,45 @@
    설정 (CONFIG)
    ============================================================ */
 const CONFIG = {
-  // 전통예술 분야 설문 응답이 쌓일 구글 시트 ID를 넣어주세요.
-  // (무용·미술·음악 워크숍과는 별도의 시트를 사용해야 합니다.)
-  SPREADSHEET_ID: '1EHi0Roghf9OZz5YfvuagxAedJqoopBcaKiIn5BEto8M',
+  // Apps Script 웹앱 주소 (조사 링크 시트와 동일한 배포를 재사용합니다)
+  API_URL: 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec',
 
-  // 응답이 쌓이는 시트(탭) 이름
-  SHEET_NAME: '시트1',
+  // 응답이 쌓이는 탭 이름
+  SHEET_NAME: '전통예술',
 
   REFRESH_INTERVAL_SEC: 30,
 
-  // 내부 필드 ↔ 실제 시트 헤더(1행) 매핑. music_survey.html의 문항 번호(1,
-  // 2-1~2-4, 3-1~3-3, 4-1~4-2, 5, 6, 7, 8-1~8-2, 9)를 시트 헤더로 그대로 쓰는
-  // 것을 기준으로 매핑했습니다. 실제 헤더 텍스트가 다르면 오른쪽 값만 바꿔주세요.
+  // 내부 필드 ↔ 실제 시트 헤더(1행) 매핑
   FIELD_MAP: {
-    timestamp:     '타임스탬프',
-    q1_part:       '1',
-    q2_content:    '2-1',
-    q2_program:    '2-2',
-    q2_instructor: '2-3',
-    q2_duration:   '2-4',
-    q2_facility:   '2-5',
-    q3_mentor:     '3-1',
-    q3_safety:     '3-2',
-    q3_meal:       '3-3',
-    q4_precomm:    '4-1',
-    q4_parentcomm: '4-2',
-    q5_best_point: '5',
-    q6_future:     '6',
-    q7_artist:     '7',
-    q8_reapply:    '8-1',
-    q8_recommend:  '8-2',
-    q9_feedback:   '9'
+    timestamp:     '제출시각',
+    q1_part:       '참여파트',
+    q2_content:    '프로그램 내용·구성 만족도',
+    q2_program:    '세부프로그램',
+    q2_instructor: '강사 만족도',
+    q2_duration:   '시간 만족도',
+    q2_facility:   '시설·진행 만족도',
+    q3_mentor:     '생활멘토 돌봄',
+    q3_safety:     '안전·편의',
+    q3_meal:       '식사·휴식',
+    q4_precomm:    '사전안내(일정·장소·준비물)',
+    q4_parentcomm: '학부모소통(연락·공지)',
+    q5_best_point: '좋았던 점',
+    q6_future:     '배우고 싶은 분야',
+    q7_artist:     '만나고 싶은 아티스트',
+    q8_reapply:    '재참여 의향',
+    q8_recommend:  '추천 의향',
+    q9_feedback:   '기타 의견'
   }
 };
 /* ============================================================ */
 
-// Every entry here corresponds 1:1 to an actual survey question (music_survey.html).
+// Every entry here corresponds 1:1 to an actual survey question (survey_t.html).
 // field: internal key, q: exact question text as shown in the survey, short: chart axis label
 const M2_ITEMS = [
   { field:'q2_content',    q:'2-1. 프로그램 내용 및 구성이 유익했습니까?',              short:'내용·구성' },
   { field:'q2_instructor', q:'2-3. 강사진의 지도 방식은 만족스러웠습니까?',              short:'강사 지도' },
   { field:'q2_duration',   q:'2-4. 교육 일정은 적절했습니까?',                        short:'교육 일정' },
-  { field:'q2_facility',   q:'2-5. 전반적인 운영 및 환경(시설/진행)은 어떠했습니까?',      short:'운영·환경' }
+  { field:'q2_facility',   q:'2-5. 전반적인 운영 및 환경(시설·진행)은 어떠했습니까?',      short:'운영·환경' }
 ];
 const M3_ITEMS = [
   { field:'q3_mentor', q:'3-1. 생활멘토(담당 선생님)의 돌봄과 소통은 어떠셨습니까?',        short:'생활멘토 돌봄' },
@@ -324,7 +321,7 @@ const M3_ITEMS = [
 ];
 const M4_ITEMS = [
   { field:'q4_precomm',    q:'4-1. 워크숍 신청 및 사전 안내(일정·장소·준비물 등)는 충분했습니까?', short:'사전 안내' },
-  { field:'q4_parentcomm', q:'4-2. 워크숍 기간 중 학부모 대상 소통(연락, 공지사항 전달)은 원활했습니까?', short:'학부모 소통' }
+  { field:'q4_parentcomm', q:'4-2. 워크숍 기간 중 학부모 대상 소통(연락·공지사항 전달)은 원활했습니까?', short:'학부모 소통' }
 ];
 const M8_ITEMS = [
   { field:'q8_reapply',   q:'8-1. 다음에 유사한 워크숍이 열린다면 다시 참여하고 싶으십니까?', short:'재참여 의향' },
@@ -334,9 +331,9 @@ const M8_ITEMS = [
 // Movements 5, 6, 7, 9 — text responses, exact question text preserved
 const TEXT_MOVEMENTS = [
   { key:'q5_best_point', num:'05', label:'Movement 5', question:'이번 워크숍에서 가장 좋았던 점은 무엇입니까?' },
-  { key:'q6_future',     num:'06', label:'Movement 6', question:'추후 겨울캠프에서 배우고 싶은 전통예술 분야나 세부 과목은 무엇입니까?' },
-  { key:'q7_artist',     num:'07', label:'Movement 7', question:'향후 겨울캠프에서 꼭 만나보고 싶은 국내외 아티스트가 있다면 추천해주세요.' },
-  { key:'q9_feedback',   num:'09', label:'Movement 9', question:'기타 본 프로그램에 대한 개선점이나 건의사항이 있다면 자유롭게 작성해주세요.' }
+  { key:'q6_future',     num:'06', label:'Movement 6', question:'향후 프로그램 또는 겨울캠프에서 배우고 싶은 전통예술 분야나 세부 과목은 무엇입니까?' },
+  { key:'q7_artist',     num:'07', label:'Movement 7', question:'향후 프로그램 또는 겨울캠프에서 꼭 만나보고 싶은 전통예술 국내외 아티스트가 있다면 추천해주세요.' },
+  { key:'q9_feedback',   num:'09', label:'Movement 9', question:'본 프로그램과 관련하여 개선이 필요한 점이나 기타 의견이 있다면 자유롭게 작성해주세요.' }
 ];
 
 let charts = {};
@@ -345,29 +342,13 @@ let currentTextMovement = TEXT_MOVEMENTS[0].key;
 
 const NAVY = '#2f4f62', GOLD = '#eec97a', GOLD_DEEP = '#c9973f', LINE = '#e7ddc4', INK_SOFT = '#6b6459';
 
-function gvizUrl(){
-  return `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}&_=${Date.now()}`;
-}
-
 async function fetchSheet(){
-  const res = await fetch(gvizUrl());
-  if(!res.ok) throw new Error('시트 응답 오류 (' + res.status + ')');
-  const text = await res.text();
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if(start === -1 || end === -1) throw new Error('시트 데이터를 해석할 수 없습니다. 시트 이름 또는 공유 설정을 확인해주세요.');
-  const json = JSON.parse(text.substring(start, end + 1));
-  const cols = json.table.cols.map((c, i) => (c.label && c.label.trim()) || c.id || ('col' + i));
-  const rows = json.table.rows.map(r => (r.c || []).map(cell => {
-    if(!cell) return '';
-    if(cell.f !== undefined && cell.f !== null) return cell.f;
-    return cell.v ?? '';
-  }));
-  return rows.map(r => {
-    const obj = {};
-    cols.forEach((c, i) => { obj[c] = r[i]; });
-    return obj;
-  });
+  const url = `${CONFIG.API_URL}?action=responses&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}&_=${Date.now()}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  if(!res.ok) throw new Error('데이터 응답 오류 (' + res.status + ')');
+  const data = await res.json();
+  if(data && data.error) throw new Error(data.error);
+  return data;
 }
 
 function mapRow(raw){
@@ -776,14 +757,13 @@ function showSetupNotice(message){
   panel.innerHTML = `
     <h2>설정이 필요합니다</h2>
     ${message ? `<p class="err">${escapeHtml(message)}</p>` : ''}
-    <p>이 페이지 하단 &lt;script&gt; 안의 <code>CONFIG</code> 값을 채워주세요.</p>
+    <p>이 페이지 하단 &lt;script&gt; 안의 <code>CONFIG</code> 값을 확인해주세요.</p>
     <ol>
-      <li>설문 응답이 쌓이는 구글 시트를 엽니다.</li>
-      <li>주소창 URL에서 <code>/d/</code> 와 <code>/edit</code> 사이의 긴 문자열을 복사해 <code>SPREADSHEET_ID</code>에 붙여넣습니다.</li>
-      <li>응답이 쌓이는 시트 하단 탭 이름을 <code>SHEET_NAME</code>에 정확히 입력합니다.</li>
-      <li>시트 오른쪽 상단 <b>공유</b> → "링크가 있는 모든 사용자" → <b>뷰어</b> 권한으로 설정합니다.</li>
+      <li><code>API_URL</code>이 Apps Script 웹앱 주소로 올바르게 설정되어 있는지 확인합니다.</li>
+      <li>Apps Script 배포의 "액세스 권한이 있는 사용자"가 <b>전체</b>로 설정되어 있는지 확인합니다.</li>
+      <li><code>SHEET_NAME</code>이 응답이 쌓이는 실제 탭 이름과 정확히 일치하는지 확인합니다.</li>
     </ol>
-    <p>실제 시트 헤더가 문항 번호(예: <code>2-1</code>)와 다르게 표시되어 있다면(날짜로 자동 변환된 경우 등), <code>FIELD_MAP</code>의 오른쪽 값을 실제 헤더 텍스트로 바꿔주세요.</p>
+    <p>실제 시트 헤더가 <code>FIELD_MAP</code>과 다르게 되어 있다면, <code>FIELD_MAP</code>의 오른쪽 값을 실제 헤더 텍스트로 바꿔주세요.</p>
   `;
 }
 
@@ -845,7 +825,7 @@ async function loadData(isManual){
   const btn = document.getElementById('refreshBtn');
   if(isManual) btn.classList.add('spinning');
 
-  if(!CONFIG.SPREADSHEET_ID){
+  if(!CONFIG.API_URL){
     showSetupNotice(null);
     if(isManual) btn.classList.remove('spinning');
     return;
@@ -894,9 +874,9 @@ async function loadData(isManual){
 
 document.getElementById('refreshBtn').addEventListener('click', ()=>loadData(true));
 
-if(CONFIG.SPREADSHEET_ID){
+if(CONFIG.API_URL){
   const sourceBtn = document.getElementById('sourceDataBtn');
-  sourceBtn.href = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`;
+  sourceBtn.href = 'https://docs.google.com/spreadsheets/d/1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310/edit';
   sourceBtn.style.display = 'flex';
 }
 
