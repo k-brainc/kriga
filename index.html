@@ -5,193 +5,233 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>K예술영재 프로젝트 | 만족도조사 · 분석보고서</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 <style>
   :root{
-    --cream:#FBF4E4;
-    --paper:#FFFDF7;
-    --teal-deep:#2C4760;
-    --teal-mid:#1B4C58;
-    --gold:#EFC758;
-    --gold-soft:#F3D48A;
-    --gold-dim:#C9A54A;
-    --ink:#2C2A26;
-    --ink-soft:#6B6459;
+    --paper:#F6F0DF;
+    --panel:#FCF8EE;
+    --ink:#1E2A3C;
+    --ink-soft:#5B6472;
+    --ink-faint:#8B8577;
+    --brass:#9C7A32;
+    --brass-deep:#7D611F;
+    --line:#DED0AC;
 
-    --dance:#D897A9;
-    --art:#8FB48A;
-    --music:#7FA9C4;
-    --trad:#C97158;
+    --dance:#AD5E77;
+    --art:#557E52;
+    --music:#476F8F;
+    --trad:#A14C2B;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     min-height:100vh;
-    background:var(--cream);
-    font-family:'Noto Sans KR', sans-serif;
+    background:var(--paper);
+    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
     color:var(--ink);
     word-break:keep-all;
     overflow-wrap:break-word;
   }
+
   header{
-    padding:56px 24px 32px;
-    text-align:center;
+    max-width:1040px;
+    margin:0 auto;
+    padding:72px 24px 40px;
   }
-  header .eyebrow{
-    font-size:13px;
-    letter-spacing:.14em;
-    color:var(--gold-dim);
-    font-weight:700;
-    margin-bottom:10px;
+  header .kicker{
+    font-size:13.5px;
+    color:var(--ink-faint);
+    margin-bottom:18px;
   }
   header h1{
-    font-family:'Noto Serif KR', serif;
+    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
     font-weight:700;
-    font-size:clamp(24px,4vw,34px);
-    color:var(--teal-deep);
-    margin:0 0 10px;
+    font-size:clamp(30px,5vw,42px);
+    line-height:1.25;
+    color:var(--ink);
+    margin:0 0 18px;
   }
   header p{
     color:var(--ink-soft);
-    font-size:15px;
+    font-size:15.5px;
+    line-height:1.7;
     margin:0;
+    max-width:52ch;
+  }
+  header .rule{
+    margin-top:36px;
+    height:1px;
+    background:var(--line);
   }
 
   main{
     max-width:1040px;
     margin:0 auto;
-    padding:0 20px 80px;
+    padding:0 24px 100px;
   }
 
   .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:22px;
+    gap:32px 28px;
   }
-  @media(max-width:720px){
-    .grid{grid-template-columns:1fr;}
+  @media(max-width:700px){
+    .grid{ grid-template-columns:1fr; }
   }
 
-  .card{
+  .tile{
+    background:var(--panel);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(30,42,60,.04), 0 12px 28px rgba(30,42,60,.08);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .tile:hover{
+    transform:translateY(-3px);
+    box-shadow:0 4px 10px rgba(30,42,60,.06), 0 20px 36px rgba(30,42,60,.12);
+  }
+
+  .tile .photo{
     position:relative;
-    background:var(--paper);
-    border-radius:18px;
-    box-shadow:0 10px 28px rgba(44,71,96,.08);
-    padding:26px 26px 24px;
+    aspect-ratio:4/3;
+    background:
+      radial-gradient(120% 140% at 15% 0%, color-mix(in srgb, var(--accent) 55%, white) 0%, transparent 55%),
+      linear-gradient(150deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, #1E2A3C) 100%);
     overflow:hidden;
   }
-  .card::before{
-    content:'';
+  .tile .photo img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .tile .photo .mark{
     position:absolute;
-    top:0; left:0; right:0;
-    height:6px;
-    background:var(--accent);
+    right:18px; bottom:12px;
+    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
+    font-size:76px;
+    line-height:1;
+    color:rgba(255,255,255,.22);
+    user-select:none;
   }
-  .card .corner{
+  .tile .photo .num{
     position:absolute;
-    top:14px; left:14px;
-    width:9px; height:9px;
-    background:var(--gold);
-    transform:rotate(45deg);
-    opacity:.85;
+    top:16px; left:18px;
+    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
+    font-size:14px;
+    color:rgba(255,255,255,.85);
   }
-  .card .field-label{
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.08em;
-    color:var(--accent);
-    text-transform:uppercase;
-    margin-bottom:6px;
+  .tile .photo .scrim{
+    position:absolute; left:0; right:0; bottom:0;
+    height:60%;
+    background:linear-gradient(180deg, transparent, rgba(15,20,30,.62));
   }
-  .btn-right{
+  .tile .photo .caption{
+    position:absolute;
+    left:18px; right:18px; bottom:14px;
     display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .tile .photo h2{
+    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
+    font-weight:600;
+    font-size:23px;
+    color:#fff;
+    margin:0;
+  }
+
+  .tile .body{
+    padding:18px 20px 22px;
+  }
+  .tile .field-name{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--accent);
+    margin-bottom:12px;
+  }
+
+  .status-pill{
+    display:inline-flex;
     align-items:center;
-    gap:8px;
-  }
-  .btn-status{
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:.02em;
-    padding:3px 10px;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:600;
+    padding:3px 10px 3px 8px;
     border-radius:999px;
-    text-transform:none;
+    background:rgba(255,255,255,.18);
+    color:#fff;
+    backdrop-filter:blur(2px);
   }
-  .btn-status.is-open{
-    background:rgba(62,122,52,.14);
-    color:#2C5A26;
+  .status-pill::before{
+    content:'';
+    width:6px; height:6px;
+    border-radius:50%;
   }
-  .btn-status.is-closed{
-    background:rgba(165,67,47,.14);
-    color:#7A2E1C;
-  }
-  .card h2{
-    font-family:'Noto Serif KR', serif;
-    font-size:22px;
-    color:var(--teal-deep);
-    margin:0 0 18px;
-  }
+  .status-pill.is-open::before{ background:#8FD66B; }
+  .status-pill.is-closed::before{ background:#E0836A; }
 
   .link-row{
     display:flex;
-    flex-direction:column;
+    flex-wrap:wrap;
     gap:10px;
+    align-items:center;
   }
   .link-btn{
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:13px 18px;
-    border-radius:999px;
-    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
-    color:var(--teal-deep);
-    font-weight:700;
-    font-size:14.5px;
+    gap:7px;
+    padding:9px 16px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:600;
+    font-size:14px;
     text-decoration:none;
-    box-shadow:0 4px 10px rgba(239,199,88,.35);
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
   }
   .link-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 6px 14px rgba(239,199,88,.45);
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--panel);
   }
-  .link-btn.secondary{
-    background:var(--paper);
-    border:1.5px solid var(--teal-deep);
-    color:var(--teal-deep);
-    box-shadow:none;
+  .link-btn.primary{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--panel);
   }
-  .link-btn.secondary:hover{
-    background:#F4F0E2;
+  .link-btn.primary:hover{
+    background:var(--accent);
+    border-color:var(--accent);
   }
   .link-btn .arrow{
-    font-size:16px;
+    font-size:13px;
     line-height:1;
   }
   .link-btn.disabled{
-    background:#EFEAE0;
-    color:var(--ink-soft);
-    box-shadow:none;
+    color:var(--ink-faint);
+    background:transparent;
+    border:1px dashed var(--line);
     cursor:default;
     pointer-events:none;
-    opacity:.75;
   }
 
   .updated{
-    text-align:center;
-    color:var(--ink-soft);
+    text-align:right;
+    color:var(--ink-faint);
     font-size:12.5px;
-    margin-top:36px;
+    margin-top:32px;
   }
 
   .setup-banner{
     max-width:1040px;
     margin:0 auto 28px;
     padding:16px 20px;
-    background:#FFF3D6;
-    border:1px solid var(--gold-dim);
-    border-radius:12px;
-    color:#6B4E1E;
+    background:#F3E6C4;
+    border:1px solid var(--brass);
+    border-radius:4px;
+    color:var(--brass-deep);
     font-size:13.5px;
     line-height:1.6;
   }
@@ -205,17 +245,23 @@
   .state-msg{
     text-align:center;
     padding:60px 20px;
-    color:var(--ink-soft);
+    color:var(--ink-faint);
     font-size:14px;
+  }
+
+  @media(max-width:560px){
+    .row{ grid-template-columns:1fr; gap:8px; }
+    .row .num{ padding-top:0; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="eyebrow">K-ARTS GIFTED PROJECT 2026</div>
+  <div class="kicker">K-Arts Gifted Project · 2026</div>
   <h1>K예술영재 프로젝트</h1>
   <p>분야별 리플렛, 만족도 조사 문항, 만족도 조사 분석 보고서를 확인할 수 있습니다.</p>
+  <div class="rule"></div>
 </header>
 
 <main>
@@ -253,11 +299,13 @@
 /* ============================================================ */
 
   const FIELD_META = {
-    '무용':  { key:'dance', color:'var(--dance)',  order:1 },
-    '미술':  { key:'art',   color:'var(--art)',    order:2 },
-    '음악':  { key:'music', color:'var(--music)',  order:3 },
-    '전통예술': { key:'trad', color:'var(--trad)', order:4 },
+    '무용':  { key:'dance', color:'var(--dance)',  order:1, mark:'舞', image:'' },
+    '미술':  { key:'art',   color:'var(--art)',    order:2, mark:'畵', image:'' },
+    '음악':  { key:'music', color:'var(--music)',  order:3, mark:'樂', image:'' },
+    '전통예술': { key:'trad', color:'var(--trad)', order:4, mark:'傳', image:'' },
   };
+  // 각 분야의 실제 워크숍 사진 주소를 image 자리에 넣으면 사진이 표시됩니다.
+  // (비워두면 위에 지정한 한자 마크가 있는 그라데이션 플레이스홀더가 표시됩니다.)
 
   const FIELD_ALIASES = {
     '무용':'무용', '발레':'무용', 'dance':'무용', 'ballet':'무용',
@@ -322,10 +370,9 @@
     if(!url){
       return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">준비중</span></span>`;
     }
-    const statusTag = `<span class="btn-status ${open ? 'is-open' : 'is-closed'}">${open ? '진행중' : '마감'}</span>`;
-    return `<a class="link-btn" href="${url}" target="_blank" rel="noopener">
-      <span>만족도 조사 문항</span>
-      <span class="btn-right">${statusTag}<span class="arrow">→</span></span>
+    const statusPill = `<span class="status-pill ${open ? 'is-open' : 'is-closed'}">${open ? '진행중' : '마감'}</span>`;
+    return `<a class="link-btn primary" href="${url}" target="_blank" rel="noopener">
+      <span>만족도 조사 문항</span>${statusPill}<span class="arrow">→</span>
     </a>`;
   }
 
@@ -333,22 +380,31 @@
     const content = document.getElementById('content');
     const fields = Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
 
-    content.innerHTML = `<div class="grid">
-      ${fields.map(f=>{
+    content.innerHTML = `<div class="grid">${fields.map((f, i)=>{
         const meta = FIELD_META[f];
         const d = dataByField[f] || {};
-        return `<div class="card" style="--accent:${meta.color}">
-          <div class="corner"></div>
-          <div class="field-label">${f}</div>
-          <h2>${f} 분야</h2>
-          <div class="link-row">
-            ${linkBtn('리플렛 보기', d.leaflet, false)}
-            ${surveyBtn(f, d.survey, d.open)}
-            ${linkBtn('분석보고서 보기', d.report, false)}
+        const photoInner = meta.image
+          ? `<img src="${meta.image}" alt="${f} 분야">`
+          : `<span class="mark">${meta.mark}</span>`;
+        return `<div class="tile" style="--accent:${meta.color}">
+          <div class="photo">
+            ${photoInner}
+            <span class="num">${String(i+1).padStart(2,'0')}</span>
+            <div class="scrim"></div>
+            <div class="caption">
+              <h2>${f}</h2>
+            </div>
+          </div>
+          <div class="body">
+            <div class="field-name">${f} 분야</div>
+            <div class="link-row">
+              ${linkBtn('리플렛 보기', d.leaflet, false)}
+              ${surveyBtn(f, d.survey, d.open)}
+              ${linkBtn('분석보고서 보기', d.report, false)}
+            </div>
           </div>
         </div>`;
-      }).join('')}
-    </div>`;
+      }).join('')}</div>`;
 
     document.getElementById('updatedWrap').innerHTML =
       `<div class="updated">마지막 갱신: ${new Date().toLocaleString('ko-KR')}</div>`;
