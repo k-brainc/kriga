@@ -226,9 +226,10 @@
 <script>
 /* ============================================================
    설정 (CONFIG)
-   구글시트를 만드신 뒤 아래 SHEET_ID만 채워 넣으면 바로 작동합니다.
+   Apps Script 웹앱 주소로 "조사 링크" 탭 데이터를 가져옵니다.
+   (시트: K예술영재 프로젝트_워크숍 만족도 조사)
 
-   시트 형식 (첫 번째 탭, 첫 행은 헤더):
+   시트 형식 ("조사 링크" 탭, 첫 행은 헤더):
    ┌────────────┬──────────────────────┬──────────────────────┬────────┐
    │ 분야        │ 만족도조사 링크        │ 분석보고서 링크         │ 상태    │
    ├────────────┼──────────────────────┼──────────────────────┼────────┤
@@ -243,10 +244,8 @@
    - 링크가 아직 없는 셀은 비워두면 "준비중"으로 표시됩니다
    - "상태" 열에 "진행" 또는 "마감"을 적으면 만족도 조사 문항 버튼이
      그에 따라 열리거나 잠깁니다 (비워두면 기본값은 "진행")
-   - 시트 공유 설정을 "링크가 있는 모든 사용자 - 뷰어"로 열어두어야 합니다
    ============================================================ */
-  const SHEET_ID = '1Q701X-ZG5fD8IOoPuhwjGRNo2ELxf7dL7W6j7Fcs2RM';
-  const SHEET_TAB = '';       // 비워두면 첫 번째 탭을 사용합니다 (탭 이름이 있으면 정확히 입력)
+  const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
 
 /* ============================================================ */
 
@@ -363,45 +362,29 @@
   }
 
   async function load(){
-    if(!SHEET_ID){
-      renderSetupNotice();
-      render(demoData());
-      return;
-    }
-
-    const tabParam = SHEET_TAB ? `&sheet=${encodeURIComponent(SHEET_TAB)}` : '';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1${tabParam}&_=${Date.now()}`;
-
     try{
+      const url = `${LINK_API_URL}?_=${Date.now()}`;
       const res = await fetch(url, { cache: 'no-store' });
-      const text = await res.text();
-      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}')+1));
-
-      const cols = json.table.cols.map(c => c.label || '');
-      const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v ?? '') : ''));
-      console.log('[디버그] 시트 헤더:', cols);
-      console.log('[디버그] 시트 행:', rows);
-
-      // 헤더 자동 인식에 기대지 않고 항상 고정 위치로 읽습니다: A=분야, B=만족도조사 링크, C=분석보고서 링크, D=상태
-      const fieldCol = 0, surveyCol = 1, reportCol = 2, statusCol = 3;
-      console.log('[디버그] 컬럼 인덱스(고정) - 분야:', fieldCol, '만족도:', surveyCol, '분석:', reportCol, '상태:', statusCol);
+      const data = await res.json();
+      console.log('[디버그] Apps Script 응답:', data);
 
       const dataByField = {};
-      rows.forEach(row=>{
-        const field = normalizeField(row[fieldCol]);
+      Object.keys(data).forEach(rawField=>{
+        const field = normalizeField(rawField);
         if(!field) return;
+        const entry = data[rawField] || {};
         dataByField[field] = {
-          survey: (row[surveyCol] || '').toString().trim(),
-          report: (row[reportCol] || '').toString().trim(),
-          open: isOpen(row[statusCol]),
-          rawStatus: row[statusCol] === undefined ? 'undefined (열이 없음)' : row[statusCol] === '' ? '(빈 값)' : String(row[statusCol]),
+          survey: (entry.survey || '').toString().trim(),
+          report: (entry.report || '').toString().trim(),
+          open: isOpen(entry.status),
+          rawStatus: entry.status === undefined || entry.status === '' ? '(빈 값)' : String(entry.status),
         };
       });
 
       render(dataByField);
     }catch(err){
       console.error(err);
-      renderError('시트를 불러오지 못했습니다. 시트 공유 설정(링크가 있는 모든 사용자 - 뷰어)과 SHEET_ID를 확인해 주세요.');
+      renderError('데이터를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 전체)를 확인해 주세요.');
     }
   }
 
