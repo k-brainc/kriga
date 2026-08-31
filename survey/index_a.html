@@ -232,17 +232,17 @@
    ┌────────────┬──────────────────────┬──────────────────────┬────────┐
    │ 분야        │ 만족도조사 링크        │ 분석보고서 링크         │ 상태    │
    ├────────────┼──────────────────────┼──────────────────────┼────────┤
-   │ 무용        │ https://...          │ https://...          │ 오픈    │
+   │ 무용        │ https://...          │ https://...          │ 진행    │
    │ 미술        │ https://...          │ https://...          │ 마감    │
-   │ 음악        │ https://...          │ https://...          │ 오픈    │
-   │ 전통예술     │ https://...          │ https://...          │ 오픈    │
+   │ 음악        │ https://...          │ https://...          │ 진행    │
+   │ 전통예술     │ https://...          │ https://...          │ 진행    │
    └────────────┴──────────────────────┴──────────────────────┴────────┘
 
    - "분야" 열의 값은 무용/미술/음악/전통예술 중 하나로 적어주세요
      (다른 표현이 들어와도 유사어는 자동 인식하려 시도합니다)
    - 링크가 아직 없는 셀은 비워두면 "준비중"으로 표시됩니다
-   - "상태" 열에 "오픈" 또는 "마감"을 적으면 만족도 설문 문항 버튼이
-     그에 따라 열리거나 잠깁니다 (비워두면 기본값은 "오픈")
+   - "상태" 열에 "진행" 또는 "마감"을 적으면 만족도 조사 문항 버튼이
+     그에 따라 열리거나 잠깁니다 (비워두면 기본값은 "진행")
    - 시트 공유 설정을 "링크가 있는 모든 사용자 - 뷰어"로 열어두어야 합니다
    ============================================================ */
   const SHEET_ID = '1Q701X-ZG5fD8IOoPuhwjGRNo2ELxf7dL7W6j7Fcs2RM';
@@ -265,11 +265,11 @@
   };
 
   function isOpen(raw){
-    if(raw === undefined || raw === null || String(raw).trim() === '') return true; // 기본값: 오픈
+    if(raw === undefined || raw === null || String(raw).trim() === '') return true; // 기본값: 진행중
     const v = String(raw).trim().toLowerCase();
     if(['마감','마감중','closed','close','종료','off','no','n'].includes(v)) return false;
-    if(['오픈','진행중','open','on','yes','y'].includes(v)) return true;
-    return true; // 알 수 없는 값은 안전하게 오픈으로 처리
+    if(['오픈','진행','진행중','open','on','yes','y'].includes(v)) return true;
+    return true; // 알 수 없는 값은 안전하게 진행중으로 처리
   }
 
   function normalizeField(raw){
@@ -318,14 +318,14 @@
 
   function surveyBtn(fieldName, url, open){
     if(!url){
-      return `<span class="link-btn disabled"><span>만족도 설문 문항</span><span class="arrow">준비중</span></span>`;
+      return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">준비중</span></span>`;
     }
     if(!open){
-      return `<span class="link-btn disabled"><span>만족도 설문 문항</span><span class="arrow">마감</span></span>`;
+      return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">마감</span></span>`;
     }
     const gateUrl = `survey.html?field=${encodeURIComponent(fieldName)}`;
     return `<a class="link-btn" href="${gateUrl}" target="_blank" rel="noopener">
-      <span>만족도 설문 문항</span><span class="arrow">→</span>
+      <span>만족도 조사 문항</span><span class="arrow">→</span>
     </a>`;
   }
 
@@ -338,7 +338,7 @@
         const meta = FIELD_META[f];
         const d = dataByField[f] || {};
         const badge = d.survey
-          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '오픈' : '마감'}</span>`
+          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'}</span>`
           : '';
         return `<div class="card" style="--accent:${meta.color}">
           <div class="corner"></div>
