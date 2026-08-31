@@ -140,15 +140,34 @@
     color:#fff;
     margin:0;
   }
+  .leaflet-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.4);
+    backdrop-filter:blur(3px);
+    color:#fff;
+    font-weight:600;
+    font-size:12.5px;
+    text-decoration:none;
+    transition:background .15s ease;
+    white-space:nowrap;
+  }
+  .leaflet-btn:hover{
+    background:rgba(255,255,255,.3);
+  }
+  .leaflet-btn.disabled{
+    color:rgba(255,255,255,.5);
+    border-color:rgba(255,255,255,.22);
+    cursor:default;
+    pointer-events:none;
+  }
 
   .tile .body{
     padding:18px 20px 22px;
-  }
-  .tile .field-name{
-    font-size:12.5px;
-    font-weight:600;
-    color:var(--accent);
-    margin-bottom:12px;
   }
 
   .status-pill{
@@ -299,10 +318,10 @@
 /* ============================================================ */
 
   const FIELD_META = {
-    '무용':  { key:'dance', color:'var(--dance)',  order:1, mark:'舞', image:'' },
-    '미술':  { key:'art',   color:'var(--art)',    order:2, mark:'畵', image:'' },
-    '음악':  { key:'music', color:'var(--music)',  order:3, mark:'樂', image:'' },
-    '전통예술': { key:'trad', color:'var(--trad)', order:4, mark:'傳', image:'' },
+    '무용':  { key:'dance', color:'var(--dance)',  order:1, mark:'舞', image:'https://k-brainc.github.io/kriga/img/b.webp' },
+    '미술':  { key:'art',   color:'var(--art)',    order:2, mark:'畵', image:'https://k-brainc.github.io/kriga/img/a.jpg' },
+    '음악':  { key:'music', color:'var(--music)',  order:3, mark:'樂', image:'https://k-brainc.github.io/kriga/img/m.jpg' },
+    '전통예술': { key:'trad', color:'var(--trad)', order:4, mark:'傳', image:'https://k-brainc.github.io/kriga/img/t.webp' },
   };
   // 각 분야의 실제 워크숍 사진 주소를 image 자리에 넣으면 사진이 표시됩니다.
   // (비워두면 위에 지정한 한자 마크가 있는 그라데이션 플레이스홀더가 표시됩니다.)
@@ -376,6 +395,15 @@
     </a>`;
   }
 
+  function leafletBtn(url){
+    if(!url){
+      return `<span class="leaflet-btn disabled"><span>리플렛</span></span>`;
+    }
+    return `<a class="leaflet-btn" href="${url}" target="_blank" rel="noopener">
+      <span>리플렛 보기</span><span class="arrow">→</span>
+    </a>`;
+  }
+
   function render(dataByField){
     const content = document.getElementById('content');
     const fields = Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
@@ -393,12 +421,11 @@
             <div class="scrim"></div>
             <div class="caption">
               <h2>${f}</h2>
+              ${leafletBtn(d.leaflet)}
             </div>
           </div>
           <div class="body">
-            <div class="field-name">${f} 분야</div>
             <div class="link-row">
-              ${linkBtn('리플렛 보기', d.leaflet, false)}
               ${surveyBtn(f, d.survey, d.open)}
               ${linkBtn('분석보고서 보기', d.report, false)}
             </div>
