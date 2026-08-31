@@ -593,9 +593,9 @@
       <!-- Slide 9 : Thank you -->
       <section class="slide thankyou" data-slide="9">
         <span class="corner corner-tl small"></span><span class="corner corner-tr small"></span><span class="corner corner-bl small"></span><span class="corner corner-br small"></span>
-        <div class="flourish">❦</div>
-        <h2>감사합니다</h2>
-        <p>설문이 성공적으로 제출되었습니다.<br>여러분의 이야기가 다음 워크숍의 무대를 더 아름답게 만들어줄 거예요.</p>
+        <div class="flourish" id="finalFlourish">❦</div>
+        <h2 id="finalTitle">감사합니다</h2>
+        <p id="finalMessage">설문이 성공적으로 제출되었습니다.<br>여러분의 이야기가 다음 워크숍의 무대를 더 아름답게 만들어줄 거예요.</p>
       </section>
 
     </div>
@@ -742,11 +742,60 @@
     if(current > 0) showSlide(current - 1);
   });
 
-  function submitSurvey(){
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx2lRQFmaDEbqyBUK10vrJjzgC38NTyw4ntUyUaiXWrJejJ31duGti2GCki1gNraz4z/exec';
+  /* ============================================================
+     설문 오픈/마감 상태 확인 (구글시트 연동)
+     - 시트: K예술영재 프로젝트_워크숍 만족도 조사 ("조사 링크" 탭)
+     - D열(상태) 값이 "마감"이면 제출을 막습니다. 그 외(진행/공백/기타)는 오픈으로 처리합니다.
+     - 문항 열람은 항상 가능하며, 제출 시점에만 상태를 확인합니다.
+     ============================================================ */
+  const LINK_SHEET_ID = '1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310';
+  const LINK_SHEET_TAB = '조사 링크';
+  const FIELD_NAME = '미술';
+
+  async function isSurveyOpen(){
+    try{
+      const url = `https://docs.google.com/spreadsheets/d/${LINK_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(LINK_SHEET_TAB)}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v ?? '') : ''));
+      for(const row of rows){
+        const field = (row[0] || '').toString().trim();
+        if(field === FIELD_NAME){
+          const status = (row[3] || '').toString().trim();
+          return status !== '마감';
+        }
+      }
+      return true; // 분야를 못 찾으면 안전하게 오픈으로 처리
+    }catch(err){
+      console.error('상태 확인 실패, 기본값(오픈)으로 진행합니다.', err);
+      return true; // 확인 실패 시에도 응답 제출은 막지 않음
+    }
+  }
+
+  function showClosedResult(){
+    document.getElementById('finalFlourish').textContent = '✕';
+    document.getElementById('finalTitle').textContent = '제출이 마감되었습니다';
+    document.getElementById('finalMessage').innerHTML = '설문이 마감되어 제출되지 않습니다.<br>소중한 의견 감사드리며, 이번 조사는 더 이상 응답을 받고 있지 않습니다.';
+    showSlide(slides.length - 1);
+  }
+
+  async function submitSurvey(){
     const loading = document.getElementById('loading');
     bottomNav.classList.add('hidden');
+    loading.textContent = '제출 여부를 확인하는 중입니다...';
     loading.style.display = 'block';
+
+    const open = await isSurveyOpen();
+    if(!open){
+      loading.style.display = 'none';
+      alert('설문이 마감되어 제출되지 않습니다.');
+      showClosedResult();
+      return;
+    }
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx2lRQFmaDEbqyBUK10vrJjzgC38NTyw4ntUyUaiXWrJejJ31duGti2GCki1gNraz4z/exec';
+    loading.textContent = '제출 중입니다. 잠시만 기다려주세요...';
 
     fetch(scriptURL, { method:'POST', body: new FormData(form) })
       .then(()=>{
