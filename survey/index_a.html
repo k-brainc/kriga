@@ -89,16 +89,13 @@
   }
   .card .corner{
     position:absolute;
-    top:14px; right:14px;
+    top:14px; left:14px;
     width:9px; height:9px;
     background:var(--gold);
     transform:rotate(45deg);
     opacity:.85;
   }
   .card .field-label{
-    display:flex;
-    align-items:center;
-    gap:8px;
     font-size:12px;
     font-weight:700;
     letter-spacing:.08em;
@@ -107,10 +104,12 @@
     margin-bottom:6px;
   }
   .status-badge{
+    position:absolute;
+    top:16px; right:16px;
     font-size:11px;
     font-weight:700;
     letter-spacing:.02em;
-    padding:2px 9px;
+    padding:3px 10px;
     border-radius:999px;
     text-transform:none;
   }
@@ -242,7 +241,7 @@
    - "분야" 열의 값은 무용/미술/음악/전통예술 중 하나로 적어주세요
      (다른 표현이 들어와도 유사어는 자동 인식하려 시도합니다)
    - 링크가 아직 없는 셀은 비워두면 "준비중"으로 표시됩니다
-   - "상태" 열에 "오픈" 또는 "마감"을 적으면 만족도조사 참여 버튼이
+   - "상태" 열에 "오픈" 또는 "마감"을 적으면 만족도 설문 문항 버튼이
      그에 따라 열리거나 잠깁니다 (비워두면 기본값은 "오픈")
    - 시트 공유 설정을 "링크가 있는 모든 사용자 - 뷰어"로 열어두어야 합니다
    ============================================================ */
@@ -319,14 +318,14 @@
 
   function surveyBtn(fieldName, url, open){
     if(!url){
-      return `<span class="link-btn disabled"><span>만족도조사 참여</span><span class="arrow">준비중</span></span>`;
+      return `<span class="link-btn disabled"><span>만족도 설문 문항</span><span class="arrow">준비중</span></span>`;
     }
     if(!open){
-      return `<span class="link-btn disabled"><span>만족도조사 참여</span><span class="arrow">마감</span></span>`;
+      return `<span class="link-btn disabled"><span>만족도 설문 문항</span><span class="arrow">마감</span></span>`;
     }
     const gateUrl = `survey.html?field=${encodeURIComponent(fieldName)}`;
     return `<a class="link-btn" href="${gateUrl}" target="_blank" rel="noopener">
-      <span>만족도조사 참여</span><span class="arrow">→</span>
+      <span>만족도 설문 문항</span><span class="arrow">→</span>
     </a>`;
   }
 
@@ -343,7 +342,8 @@
           : '';
         return `<div class="card" style="--accent:${meta.color}">
           <div class="corner"></div>
-          <div class="field-label">${f}${badge}</div>
+          ${badge}
+          <div class="field-label">${f}</div>
           <h2>${f} 분야</h2>
           <div class="link-row">
             ${surveyBtn(f, d.survey, d.open)}
