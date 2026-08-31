@@ -434,7 +434,7 @@
             </div>
 
             <div class="scale-item">
-              <p class="item-label">2-5. 전반적인 운영 및 환경(시설/진행)은 어떠했습니까?</p>
+              <p class="item-label">2-5. 전반적인 운영 및 환경(시설·진행)은 어떠했습니까?</p>
               <div class="scale-dots" data-q="q2_facility">
                 <button type="button" class="scale-btn" value="1">1</button>
                 <button type="button" class="scale-btn" value="2">2</button>
@@ -523,7 +523,7 @@
             </div>
 
             <div class="scale-item">
-              <p class="item-label">4-2. 워크숍 기간 중 학부모 대상 소통(연락, 공지사항 전달)은 원활했습니까?</p>
+              <p class="item-label">4-2. 워크숍 기간 중 학부모 대상 소통(연락·공지사항 전달)은 원활했습니까?</p>
               <div class="scale-dots" data-q="q4_parentcomm">
                 <button type="button" class="scale-btn" value="1">1</button>
                 <button type="button" class="scale-btn" value="2">2</button>
@@ -751,30 +751,22 @@
   });
 
   /* ============================================================
-     설문 오픈/마감 상태 확인 (구글시트 연동)
+     설문 오픈/마감 상태 확인 (Apps Script 웹앱 연동)
      - 시트: K예술영재 프로젝트_워크숍 만족도 조사 ("조사 링크" 탭)
-     - D열(상태) 값이 "마감"이면 제출을 막습니다. 그 외(진행/공백/기타)는 오픈으로 처리합니다.
+     - 상태 값이 "마감"이면 제출을 막습니다. 그 외(진행/공백/기타)는 오픈으로 처리합니다.
      - 문항 열람은 항상 가능하며, 제출 시점에만 상태를 확인합니다.
      ============================================================ */
-  const LINK_SHEET_ID = '1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310';
-  const LINK_SHEET_TAB = '조사 링크';
+  const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
   const FIELD_NAME = '전통예술';
 
   async function isSurveyOpen(){
     try{
-      const url = `https://docs.google.com/spreadsheets/d/${LINK_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(LINK_SHEET_TAB)}`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-      const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v ?? '') : ''));
-      for(const row of rows){
-        const field = (row[0] || '').toString().trim();
-        if(field === FIELD_NAME){
-          const status = (row[3] || '').toString().trim();
-          return status !== '마감';
-        }
-      }
-      return true; // 분야를 못 찾으면 안전하게 오픈으로 처리
+      const url = `${LINK_API_URL}?_=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      const data = await res.json();
+      const entry = data[FIELD_NAME];
+      if(!entry) return true; // 분야를 못 찾으면 안전하게 오픈으로 처리
+      return (entry.status || '').trim() !== '마감';
     }catch(err){
       console.error('상태 확인 실패, 기본값(오픈)으로 진행합니다.', err);
       return true; // 확인 실패 시에도 응답 제출은 막지 않음
