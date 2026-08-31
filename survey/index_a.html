@@ -337,7 +337,7 @@
         const meta = FIELD_META[f];
         const d = dataByField[f] || {};
         const badge = d.survey
-          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'} [D열 원본값: "${d.rawStatus}"]</span>`
+          ? `<span class="status-badge ${d.open ? 'is-open' : 'is-closed'}">${d.open ? '진행중' : '마감'}</span>`
           : '';
         return `<div class="card" style="--accent:${meta.color}">
           <div class="corner"></div>
