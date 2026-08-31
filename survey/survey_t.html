@@ -335,6 +335,7 @@
 
 <div class="stage" id="surveyStage">
   <form id="surveyForm">
+    <input type="hidden" name="_field" value="전통예술">
     <div id="slidesWrap">
 
       <!-- Slide 0 : Intro -->
@@ -794,7 +795,7 @@
       return;
     }
 
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby1DJl6Ri-wcop15JUbw4_zH4lH-5y8T1IIQHZI7CqPVgLgSiQvmTQosq8mBwzTX6r1/exec';
+    const scriptURL = LINK_API_URL;
     loading.textContent = '제출 중입니다. 잠시만 기다려주세요...';
 
     fetch(scriptURL, { method:'POST', body: new FormData(form) })
