@@ -377,7 +377,7 @@
 <header>
   <div class="kicker">K-Arts Gifted Project · 2026</div>
   <h1>K예술영재<br>프로젝트</h1>
-  <p>분야별 만족도 조사 문항에 참여하고, 리플렛과 만족도 조사 분석 보고서를 PDF로 내려받을 수 있습니다.</p>
+  <p>분야별 만족도 조사 문항에 참여하고, 웹 리플렛과 웹 분석 보고서를 열어보거나 PDF 파일로 내려받을 수 있습니다.</p>
   <div class="rule"></div>
 </header>
 
@@ -393,24 +393,29 @@
 <script>
 /* ============================================================
    설정 (CONFIG)
-   Apps Script 웹앱 주소로 "조사 링크" 탭 데이터를 가져옵니다.
-   (시트: K예술영재 프로젝트_워크숍 만족도 조사)
+   구글시트 → Apps Script 웹앱 → 이 페이지 순서로 데이터가 흘러갑니다.
 
-   시트 형식 ("조사 링크" 탭, 첫 행은 헤더):
-   ┌────────────┬──────────────┬──────────────────────┬──────────────────────┬────────┐
-   │ 분야        │ 리플렛 링크    │ 만족도조사 링크        │ 분석보고서 링크         │ 상태    │
-   ├────────────┼──────────────┼──────────────────────┼──────────────────────┼────────┤
-   │ 무용        │ https://...  │ https://...          │ https://...          │ 진행    │
-   │ 미술        │ https://...  │ https://...          │ https://...          │ 마감    │
-   │ 음악        │ https://...  │ https://...          │ https://...          │ 진행    │
-   │ 전통예술     │ https://...  │ https://...          │ https://...          │ 진행    │
-   └────────────┴──────────────┴──────────────────────┴──────────────────────┴────────┘
+   시트 형식 (1행은 머리글, 2행부터 한 줄이 버튼 하나):
+   ┌─────────────────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+   │ A 항목                   │ B 무용        │ C 미술        │ D 음악        │ E 전통예술     │
+   ├─────────────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
+   │ 웹 리플렛                 │ https://…    │ https://…    │ https://…    │ https://…    │
+   │ 만족도 조사 문항           │ https://forms│ https://forms│ https://forms│ https://forms│
+   │ 만족도 조사 문항 상태       │ 진행          │ 마감          │ 진행          │              │
+   │ 웹 만족도 분석 보고서       │ https://…    │              │ https://…    │ https://…    │
+   │ 리플렛                    │ https://drive│ https://drive│ https://drive│ https://drive│
+   │ 마스터클래스 안내지         │              │              │ https://drive│              │
+   │ 만족도 조사 분석 보고서     │ https://drive│ https://drive│ https://drive│ https://drive│
+   └─────────────────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 
-   - "분야" 열의 값은 무용/미술/음악/전통예술 중 하나로 적어주세요
-     (다른 표현이 들어와도 유사어는 자동 인식하려 시도합니다)
-   - 링크가 아직 없는 셀은 비워두면 "준비중"으로 표시됩니다
-   - "상태" 열에 "진행" 또는 "마감"을 적으면 만족도 조사 문항 버튼이
-     그에 따라 열리거나 잠깁니다 (비워두면 기본값은 "진행")
+   - A열 "항목"에 적은 글자가 그대로 버튼 이름이 됩니다.
+   - 칸이 비어 있으면 그 분야에는 그 버튼이 생기지 않습니다.
+   - 링크가 구글 드라이브 파일 주소면 자료 (PDF) 칸에 [보기] [다운로드] 두 버튼으로,
+     그 밖의 주소면 카드 위쪽 버튼으로 자동 배치됩니다.
+   - 항목 이름에 "리플렛"이 들어간 웹 주소는 카드 사진 위 버튼이 됩니다.
+   - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 이름의 "○○" 버튼에
+     진행/마감 배지를 붙입니다. (예: "만족도 조사 문항 상태")
+   - 줄을 추가하면 버튼이 늘고, 지우면 사라집니다. 순서도 시트 줄 순서를 따릅니다.
    ============================================================ */
   const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
 
@@ -423,44 +428,27 @@
     '전통예술': { key:'trad', color:'var(--trad)', order:4, mark:'傳', image:'https://k-brainc.github.io/kriga/img/t.webp' },
   };
   // 각 분야의 실제 워크숍 사진 주소를 image 자리에 넣으면 사진이 표시됩니다.
-  // (비워두면 위에 지정한 한자 마크가 있는 그라데이션 플레이스홀더가 표시됩니다.)
 
-/* ============================================================
-   분야별 자료 파일 (구글 드라이브)
-   - 여기에 적은 링크가 각 분야 카드의 "자료" 목록에 표시됩니다.
-   - 구글 드라이브 공유 링크(https://drive.google.com/file/d/.../view)를
-     그대로 붙여넣으면 [보기]와 [다운로드] 버튼이 자동으로 만들어집니다.
-   - type:'leaflet' 로 표시한 항목이 카드 사진 위 "리플렛 보기" 버튼이 됩니다.
-   - type:'report' 항목은 구글시트의 "분석보고서 링크" 값이 있으면 그 값이 우선합니다.
-   ============================================================ */
-  const FIELD_DOCS = {
+  /* 시트에 아직 드라이브 링크 줄이 없는 분야에만 쓰이는 예비 목록입니다.
+     해당 분야에 드라이브 링크를 한 줄이라도 넣으면 그때부터 시트 값만 사용합니다. */
+  const FALLBACK_DOCS = {
     '무용': [
-      { label:'리플렛', type:'leaflet',
-        url:'https://drive.google.com/file/d/14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn/view?usp=sharing' },
-      { label:'만족도 조사 분석 보고서', type:'report',
-        url:'https://drive.google.com/file/d/1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb/view?usp=sharing' },
+      { title:'리플렛', url:'https://drive.google.com/file/d/14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn/view?usp=sharing' },
+      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb/view?usp=sharing' },
     ],
     '미술': [
-      { label:'리플렛', type:'leaflet',
-        url:'https://drive.google.com/file/d/1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu/view?usp=sharing' },
-      { label:'만족도 조사 분석 보고서', type:'report',
-        url:'https://drive.google.com/file/d/1tM_O3wf1XOUernl9tBMEtCS9JbBkpc42/view?usp=sharing' },
+      { title:'리플렛', url:'https://drive.google.com/file/d/1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu/view?usp=sharing' },
+      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1tM_O3wf1XOUernl9tBMEtCS9JbBkpc42/view?usp=sharing' },
     ],
     '음악': [
-      { label:'리플렛', type:'leaflet',
-        url:'https://drive.google.com/file/d/1Uqj0GWgrQyHuJlO-sloi_R54MTQcDPsp/view?usp=sharing' },
-      { label:'마스터클래스 안내지', type:'doc',
-        url:'https://drive.google.com/file/d/1_zXAlnpoKqUhDXFwWChFc-Zbk-706h3B/view?usp=sharing' },
-      { label:'연주회 안내지', type:'doc',
-        url:'https://drive.google.com/file/d/1ZNlxJr_31me-RnpvMgB7-cW1-55vakYT/view?usp=sharing' },
-      { label:'만족도 조사 분석 보고서', type:'report',
-        url:'https://drive.google.com/file/d/1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX/view?usp=sharing' },
+      { title:'리플렛', url:'https://drive.google.com/file/d/1Uqj0GWgrQyHuJlO-sloi_R54MTQcDPsp/view?usp=sharing' },
+      { title:'마스터클래스 안내지', url:'https://drive.google.com/file/d/1_zXAlnpoKqUhDXFwWChFc-Zbk-706h3B/view?usp=sharing' },
+      { title:'연주회 안내지', url:'https://drive.google.com/file/d/1ZNlxJr_31me-RnpvMgB7-cW1-55vakYT/view?usp=sharing' },
+      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX/view?usp=sharing' },
     ],
     '전통예술': [
-      { label:'리플렛', type:'leaflet',
-        url:'https://drive.google.com/file/d/1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT/view?usp=sharing' },
-      { label:'만족도 조사 분석 보고서', type:'report',
-        url:'https://drive.google.com/file/d/1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv/view?usp=sharing' },
+      { title:'리플렛', url:'https://drive.google.com/file/d/1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT/view?usp=sharing' },
+      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv/view?usp=sharing' },
     ],
   };
 
@@ -471,12 +459,9 @@
     '전통예술':'전통예술', '전통':'전통예술', 'traditional arts':'전통예술', 'traditional':'전통예술',
   };
 
-  function isOpen(raw){
-    if(raw === undefined || raw === null || String(raw).trim() === '') return true; // 기본값: 진행중
-    const v = String(raw).trim().toLowerCase();
-    if(['마감','마감중','closed','close','종료','off','no','n'].includes(v)) return false;
-    if(['오픈','진행','진행중','open','on','yes','y'].includes(v)) return true;
-    return true; // 알 수 없는 값은 안전하게 진행중으로 처리
+  function esc(v){
+    return String(v == null ? '' : v)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function normalizeField(raw){
@@ -488,29 +473,12 @@
     return null;
   }
 
-  function findCol(headers, keywords){
-    for(let i=0;i<headers.length;i++){
-      const h = (headers[i]||'').replace(/\s/g,'');
-      if(keywords.some(k => h.includes(k))) return i;
-    }
-    return -1;
-  }
-
-  function renderSetupNotice(){
-    const banner = document.getElementById('setupBanner');
-    banner.style.display = 'block';
-    banner.innerHTML =
-      '아직 구글시트가 연결되지 않았습니다. 만족도조사·분석보고서 링크를 정리한 구글시트를 만드신 뒤, ' +
-      '이 파일 상단 <code>SHEET_ID</code> 값에 시트 ID를 넣어주세요. (지금은 예시 데이터로 화면을 보여드립니다)';
-  }
-
-  function demoData(){
-    return {
-      '무용':   { survey:'', report:'', open:true },
-      '미술':   { survey:'', report:'', open:true },
-      '음악':   { survey:'', report:'', open:true },
-      '전통예술': { survey:'', report:'', open:true },
-    };
+  /* 상태 칸: 비어 있으면 배지 없음, 값이 있으면 진행중 또는 마감 배지 */
+  function statusOf(raw){
+    if(raw === undefined || raw === null || String(raw).trim() === '') return null;
+    const v = String(raw).trim().toLowerCase();
+    if(['마감','마감중','closed','close','종료','off','no','n'].includes(v)) return 'closed';
+    return 'open';
   }
 
   /* 구글 드라이브 공유 링크에서 파일 ID를 뽑아냅니다. */
@@ -523,141 +491,208 @@
 
   function viewUrl(url){
     const id = driveFileId(url);
-    return id ? `https://drive.google.com/file/d/${id}/view` : url;
+    return id ? 'https://drive.google.com/file/d/' + id + '/view' : url;
   }
 
   function downloadUrl(url){
     const id = driveFileId(url);
-    return id ? `https://drive.google.com/uc?export=download&id=${id}` : null;
+    return id ? 'https://drive.google.com/uc?export=download&id=' + id : null;
   }
 
-  /* 분야별 자료 목록을 구글시트 값과 합칩니다.
-     시트에 링크가 들어오면 같은 종류(리플렛/분석보고서)의 기본값을 덮어씁니다. */
-  function docsFor(field, d){
-    const base = (FIELD_DOCS[field] || []).map(doc => ({...doc}));
-    const override = (type, url) => {
-      if(!url) return;
-      const hit = base.find(doc => doc.type === type);
-      if(hit) hit.url = url;
-      else base.push({ label: type === 'leaflet' ? '리플렛' : '만족도 조사 분석 보고서', type, url });
+  /* 웹앱이 시트 격자(2차원 배열)를 그대로 보낼 때도 같은 규칙으로 펼칩니다.
+     1행: [항목, 무용, 미술, 음악, 전통예술] / 2행부터: [항목명, 링크, 링크, …] */
+  function gridToRows(values){
+    if(!values.length) return [];
+    const header = values[0] || [];
+    const cols = [];
+    for(let c = 1; c < header.length; c++){
+      const name = (header[c] == null ? '' : String(header[c])).trim();
+      if(name) cols.push({ col:c, name:name });
+    }
+    if(!cols.length) return [];
+
+    const rows = [];
+    const statuses = [];
+    for(let r = 1; r < values.length; r++){
+      const line = values[r] || [];
+      const title = (line[0] == null ? '' : String(line[0])).trim();
+      if(!title) continue;
+
+      if(/상태$/.test(title)){
+        const base = title.replace(/상태$/, '').trim();
+        if(!base) continue;
+        const map = {};
+        cols.forEach(c => { map[c.name] = (line[c.col] == null ? '' : String(line[c.col])).trim(); });
+        statuses.push({ base, map });
+        continue;
+      }
+
+      cols.forEach(c => {
+        const url = (line[c.col] == null ? '' : String(line[c.col])).trim();
+        if(!url) return;
+        rows.push({ fieldRaw:c.name, title, url, status:'' });
+      });
+    }
+
+    statuses.forEach(s => {
+      rows.forEach(row => {
+        if(row.title === s.base && s.map[row.fieldRaw]) row.status = s.map[row.fieldRaw];
+      });
+    });
+
+    const out = [];
+    rows.forEach(r => {
+      const f = normalizeField(r.fieldRaw);
+      if(!f) return;
+      out.push({ field:f, title:r.title || '자료', url:r.url, status:r.status });
+    });
+    return out;
+  }
+
+  /* 웹앱 응답을 { field, title, url, status } 줄 목록으로 정리합니다.
+     새 형식(줄 목록)과 예전 형식(분야별 묶음) 둘 다 받습니다. */
+  function toRows(data){
+    const rows = [];
+    const push = (field, title, url, status) => {
+      const f = normalizeField(field);
+      const u = (url == null ? '' : String(url)).trim();
+      if(!f || !u) return;
+      rows.push({
+        field: f,
+        title: (title == null ? '' : String(title)).trim() || '자료',
+        url: u,
+        status: (status == null ? '' : String(status)).trim(),
+      });
     };
-    override('leaflet', d.leaflet);
-    override('report', d.report);
-    return base;
+
+    if(Array.isArray(data)){
+      if(Array.isArray(data[0])) return gridToRows(data);
+      data.forEach(r => {
+        if(!r) return;
+        push(r.field || r['분야'], r.title || r['제목'], r.url || r.link || r['링크'], r.status || r['상태']);
+      });
+      return rows;
+    }
+
+    if(data && typeof data === 'object'){
+      Object.keys(data).forEach(key => {
+        const entry = data[key];
+        if(Array.isArray(entry)){
+          entry.forEach(r => push(key, r.title || r['제목'], r.url || r.link || r['링크'], r.status || r['상태']));
+          return;
+        }
+        if(!entry || typeof entry !== 'object') return;
+        push(key, '웹 리플렛', entry.leaflet, '');
+        push(key, '만족도 조사 문항', entry.survey, entry.status || '진행');
+        push(key, '웹 만족도 분석 보고서', entry.report, '');
+      });
+    }
+    return rows;
   }
 
-  function docRow(doc){
-    if(!doc.url){
-      return `<div class="doc-row is-empty">
-        <div class="doc-name">${doc.label}</div>
-        <div class="doc-actions"><span class="doc-btn">준비중</span></div>
-      </div>`;
+  /* 한 분야의 줄들을 사진 위 버튼 / 웹 버튼 / PDF 목록으로 나눕니다. */
+  function groupFor(field, rows){
+    const mine = rows.filter(r => r.field === field);
+    const pdf = mine.filter(r => driveFileId(r.url));
+    const web = mine.filter(r => !driveFileId(r.url));
+
+    let leaflet = null;
+    const i = web.findIndex(r => /리플렛|leaflet/i.test(r.title));
+    if(i >= 0) leaflet = web.splice(i, 1)[0];
+
+    const docs = pdf.length ? pdf : (FALLBACK_DOCS[field] || []);
+    return { leaflet, web, docs };
+  }
+
+  function leafletBtn(row){
+    if(!row){
+      return '<span class="leaflet-btn disabled"><span>웹 리플렛 준비중</span></span>';
     }
-    const dl = downloadUrl(doc.url);
-    const dlBtn = dl
-      ? `<a class="doc-btn download" href="${dl}" rel="noopener"><span class="ico">↓</span><span>다운로드</span></a>`
+    return '<a class="leaflet-btn" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
+      '<span>' + esc(row.title) + '</span><span class="arrow">→</span></a>';
+  }
+
+  function webBtn(row){
+    const st = statusOf(row.status);
+    const pill = st
+      ? '<span class="status-pill is-' + st + '">' + (st === 'open' ? '진행중' : '마감') + '</span>'
       : '';
-    return `<div class="doc-row">
-      <div class="doc-name">${doc.label}</div>
-      <div class="doc-actions">
-        <a class="doc-btn" href="${viewUrl(doc.url)}" target="_blank" rel="noopener">보기</a>
-        ${dlBtn}
-      </div>
-    </div>`;
+    const cls = st ? 'link-btn primary' : 'link-btn';
+    return '<a class="' + cls + '" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
+      '<span>' + esc(row.title) + '</span>' + pill + '<span class="arrow">→</span></a>';
   }
 
-  function docsBlock(field, d){
-    const docs = docsFor(field, d);
-    if(!docs.length) return '';
-    return `<div class="docs">
-      <p class="docs-title">자료 (PDF)</p>
-      ${docs.map(docRow).join('')}
-    </div>`;
+  function docRow(row){
+    const dl = downloadUrl(row.url);
+    const dlBtn = dl
+      ? '<a class="doc-btn download" href="' + esc(dl) + '" rel="noopener"><span class="ico">↓</span><span>다운로드</span></a>'
+      : '';
+    return '<div class="doc-row">' +
+      '<div class="doc-name">' + esc(row.title) + '</div>' +
+      '<div class="doc-actions">' +
+        '<a class="doc-btn" href="' + esc(viewUrl(row.url)) + '" target="_blank" rel="noopener">보기</a>' +
+        dlBtn +
+      '</div></div>';
   }
 
-  function surveyBtn(fieldName, url, open){
-    if(!url){
-      return `<span class="link-btn disabled"><span>만족도 조사 문항</span><span class="arrow">준비중</span></span>`;
-    }
-    const statusPill = `<span class="status-pill ${open ? 'is-open' : 'is-closed'}">${open ? '진행중' : '마감'}</span>`;
-    return `<a class="link-btn primary" href="${url}" target="_blank" rel="noopener">
-      <span>만족도 조사 문항</span>${statusPill}<span class="arrow">→</span>
-    </a>`;
-  }
-
-  function leafletBtn(url){
-    if(!url){
-      return `<span class="leaflet-btn disabled"><span>리플렛</span></span>`;
-    }
-    return `<a class="leaflet-btn" href="${viewUrl(url)}" target="_blank" rel="noopener">
-      <span>리플렛 보기</span><span class="arrow">→</span>
-    </a>`;
-  }
-
-  function render(dataByField){
+  function render(rows){
     const content = document.getElementById('content');
     const fields = Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
 
-    content.innerHTML = `<div class="grid">${fields.map((f, i)=>{
+    content.innerHTML = '<div class="grid">' + fields.map((f, i)=>{
         const meta = FIELD_META[f];
-        const d = dataByField[f] || {};
-        const docs = docsFor(f, d);
-        const leafletDoc = docs.find(doc => doc.type === 'leaflet');
+        const g = groupFor(f, rows);
         const photoInner = meta.image
-          ? `<img src="${meta.image}" alt="${f} 분야"><div class="tint"></div>`
-          : `<span class="mark">${meta.mark}</span>`;
-        return `<div class="tile" style="--accent:${meta.color}">
-          <div class="photo">
-            ${photoInner}
-            <span class="num">${String(i+1).padStart(2,'0')}</span>
-            <div class="scrim"></div>
-            <div class="caption">
-              <h2>${f}</h2>
-              ${leafletBtn(leafletDoc && leafletDoc.url)}
-            </div>
-          </div>
-          <div class="body">
-            <div class="link-row">
-              ${surveyBtn(f, d.survey, d.open)}
-            </div>
-            ${docsBlock(f, d)}
-          </div>
-        </div>`;
-      }).join('')}</div>`;
+          ? '<img src="' + meta.image + '" alt="' + f + ' 분야"><div class="tint"></div>'
+          : '<span class="mark">' + meta.mark + '</span>';
+
+        const webBlock = g.web.length
+          ? g.web.map(webBtn).join('')
+          : '<span class="link-btn disabled"><span>링크</span><span class="arrow">준비중</span></span>';
+
+        const docsBlock = g.docs.length
+          ? '<div class="docs"><p class="docs-title">자료 (PDF)</p>' + g.docs.map(docRow).join('') + '</div>'
+          : '';
+
+        return '<div class="tile" style="--accent:' + meta.color + '">' +
+          '<div class="photo">' + photoInner +
+            '<span class="num">' + String(i+1).padStart(2,'0') + '</span>' +
+            '<div class="scrim"></div>' +
+            '<div class="caption"><h2>' + f + '</h2>' + leafletBtn(g.leaflet) + '</div>' +
+          '</div>' +
+          '<div class="body">' +
+            '<div class="link-row">' + webBlock + '</div>' +
+            docsBlock +
+          '</div></div>';
+      }).join('') + '</div>';
 
     document.getElementById('updatedWrap').innerHTML =
-      `<div class="updated">마지막 갱신: ${new Date().toLocaleString('ko-KR')}</div>`;
+      '<div class="updated">마지막 갱신: ' + new Date().toLocaleString('ko-KR') + '</div>';
+  }
+
+  function notice(msg){
+    const banner = document.getElementById('setupBanner');
+    banner.style.display = 'block';
+    banner.textContent = msg;
   }
 
   async function load(){
     try{
-      const url = `${LINK_API_URL}?_=${Date.now()}`;
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache: 'no-store' });
       const data = await res.json();
       console.log('[디버그] Apps Script 응답:', data);
 
-      const dataByField = {};
-      Object.keys(data).forEach(rawField=>{
-        const field = normalizeField(rawField);
-        if(!field) return;
-        const entry = data[rawField] || {};
-        dataByField[field] = {
-          leaflet: (entry.leaflet || '').toString().trim(),
-          survey: (entry.survey || '').toString().trim(),
-          report: (entry.report || '').toString().trim(),
-          open: isOpen(entry.status),
-          rawStatus: entry.status === undefined || entry.status === '' ? '(빈 값)' : String(entry.status),
-        };
-      });
+      const rows = toRows(data);
+      console.log('[디버그] 버튼으로 만든 줄:', rows);
+      render(rows);
 
-      render(dataByField);
+      if(!rows.length){
+        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 분야·제목·링크 열 이름과 분야 표기(무용/미술/음악/전통예술)를 확인해 주세요.');
+      }
     }catch(err){
       console.error(err);
-      // 시트를 못 불러와도 아래에 등록해 둔 리플렛·보고서 파일은 그대로 보여줍니다.
-      render({});
-      const banner = document.getElementById('setupBanner');
-      banner.style.display = 'block';
-      banner.textContent = '만족도 조사 문항 링크를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 전체)를 확인해 주세요. 리플렛과 분석 보고서는 정상적으로 내려받을 수 있습니다.';
+      render([]);
+      notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 전체)를 확인해 주세요. 아래 PDF 자료는 정상적으로 내려받을 수 있습니다.');
     }
   }
 
