@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K예술영재 프로젝트 | 만족도조사 · 자료실</title>
+<title>K예술영재 프로젝트 | 자료실</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 <style>
@@ -36,20 +36,69 @@
     overflow-wrap:break-word;
     -webkit-font-smoothing:antialiased;
   }
-  a{ color:inherit; }
+  a{ color:inherit; text-decoration:none; }
   button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
   :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
 
-  .shell{
-    max-width:1200px;
-    margin:0 auto;
-    padding:56px 24px 96px;
-  }
+  .shell{ max-width:1200px; margin:0 auto; padding:24px 24px 96px; }
 
-  .kicker{
-    font-size:13px;
-    letter-spacing:.02em;
+  /* ── 상단 바 ──────────────────────────────── */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:24px;
+    padding:14px 0 20px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:40px;
+  }
+  .brand{
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--text-soft);
+    white-space:nowrap;
+  }
+  .brand:hover{ color:var(--text); }
+  .search{
+    position:relative;
+    flex:1;
+    max-width:440px;
+    margin-left:auto;
+  }
+  .search input{
+    width:100%;
+    padding:10px 36px 10px 36px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--text);
+    font:inherit;
+    font-size:14px;
+  }
+  .search input::placeholder{ color:var(--text-faint); }
+  .search input::-webkit-search-cancel-button,
+  .search input::-webkit-search-decoration{ -webkit-appearance:none; appearance:none; }
+  .search input:focus{ outline:none; border-color:var(--brass); }
+  .search .ico{
+    position:absolute;
+    left:13px; top:50%;
+    transform:translateY(-50%);
     color:var(--text-faint);
+    font-size:13px;
+    pointer-events:none;
+  }
+  .search .clear{
+    position:absolute;
+    right:8px; top:50%;
+    transform:translateY(-50%);
+    padding:4px 8px;
+    color:var(--text-faint);
+    font-size:14px;
+    line-height:1;
+  }
+  .search .clear:hover{ color:var(--text); }
+  @media(max-width:640px){
+    .topbar{ flex-wrap:wrap; gap:12px; }
+    .search{ max-width:none; flex:1 0 100%; margin-left:0; }
   }
 
   .setup-banner{
@@ -63,25 +112,23 @@
     line-height:1.6;
   }
 
-  /* ── 분야 선택 화면 ─────────────────────────── */
+  .kicker{ font-size:13px; color:var(--text-faint); margin:0; }
+
+  /* ── 분야 선택 ────────────────────────────── */
   .picker h1{
     font-weight:800;
-    font-size:clamp(44px,5.6vw,72px);
+    font-size:clamp(40px,5.2vw,66px);
     line-height:1.18;
-    margin:16px 0 0;
+    margin:14px 0 0;
   }
   .picker .lede{
     color:var(--text-soft);
     font-size:15.5px;
     line-height:1.75;
-    max-width:46ch;
-    margin:20px 0 44px;
+    max-width:52ch;
+    margin:18px 0 42px;
   }
-  .picks{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-  }
+  .picks{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
   @media(max-width:900px){ .picks{ grid-template-columns:repeat(2,1fr); } }
   @media(max-width:520px){ .picks{ grid-template-columns:1fr; gap:14px; } }
 
@@ -108,242 +155,142 @@
     object-fit:cover;
     filter:grayscale(.85) contrast(1.05) brightness(.82);
   }
-  .pick .tint{
-    position:absolute; inset:0;
-    background:var(--accent);
-    mix-blend-mode:color;
-    opacity:.9;
-  }
+  .pick .tint{ position:absolute; inset:0; background:var(--accent); mix-blend-mode:color; opacity:.9; }
   .pick .scrim{
-    position:absolute; left:0; right:0; bottom:0;
-    height:70%;
+    position:absolute; left:0; right:0; bottom:0; height:70%;
     background:linear-gradient(180deg, transparent, rgba(12,16,24,.78));
   }
-  .pick .foot{
-    position:absolute;
-    left:18px; right:18px; bottom:16px;
-  }
-  .pick h2{
-    font-size:24px;
-    font-weight:700;
-    margin:0;
-    color:#fff;
-  }
-  .pick .count{
-    display:block;
-    margin-top:6px;
-    font-size:12.5px;
-    color:rgba(255,255,255,.72);
-  }
+  .pick .foot{ position:absolute; left:18px; right:18px; bottom:16px; }
+  .pick h2{ font-size:24px; font-weight:700; margin:0; color:#fff; }
+  .pick .count{ display:block; margin-top:6px; font-size:12.5px; color:rgba(255,255,255,.72); }
 
-  /* ── 분야 상세 화면 ─────────────────────────── */
-  .browser{
-    display:grid;
-    grid-template-columns:212px 1fr;
-    gap:44px;
-    align-items:start;
-  }
-  @media(max-width:820px){
-    .browser{ grid-template-columns:1fr; gap:24px; }
-  }
+  /* ── 분야 상세 ────────────────────────────── */
+  .browser{ display:grid; grid-template-columns:212px 1fr; gap:44px; align-items:start; }
+  @media(max-width:820px){ .browser{ grid-template-columns:1fr; gap:24px; } }
 
-  .rail{ position:sticky; top:56px; }
+  .rail{ position:sticky; top:24px; }
   @media(max-width:820px){ .rail{ position:static; } }
-
   .rail .home{
-    display:inline-flex;
-    text-decoration:none;
-    align-items:center;
-    gap:7px;
-    font-size:13px;
-    color:var(--text-faint);
-    padding:4px 0;
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:13px; color:var(--text-faint); padding:4px 0;
   }
   .rail .home:hover{ color:var(--text); }
-  .rail nav{
-    margin-top:22px;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
+  .rail nav{ margin-top:22px; display:flex; flex-direction:column; gap:2px; }
   @media(max-width:820px){
-    .rail nav{
-      flex-direction:row;
-      gap:8px;
-      overflow-x:auto;
-      padding-bottom:4px;
-      margin-top:16px;
-    }
+    .rail nav{ flex-direction:row; gap:8px; overflow-x:auto; padding-bottom:4px; margin-top:16px; }
   }
   .rail-item{
-    display:flex;
-    text-decoration:none;
-    align-items:center;
-    gap:10px;
-    width:100%;
-    padding:10px 12px;
-    border-radius:8px;
-    font-size:14.5px;
-    font-weight:600;
-    color:var(--text-soft);
+    display:flex; align-items:center; gap:10px;
+    width:100%; padding:10px 12px; border-radius:8px;
+    font-size:14.5px; font-weight:600; color:var(--text-soft);
     white-space:nowrap;
     transition:background .15s ease, color .15s ease;
   }
-  .rail-item .dot{
-    width:7px; height:7px;
-    border-radius:50%;
-    background:currentColor;
-    opacity:.55;
-    flex:none;
-  }
+  .rail-item .dot{ width:7px; height:7px; border-radius:50%; opacity:.55; flex:none; }
   .rail-item:hover{ background:var(--surface); color:var(--text); }
-  .rail-item.is-active{
-    background:var(--surface);
-    color:var(--text);
-  }
+  .rail-item.is-active{ background:var(--surface); color:var(--text); }
   .rail-item.is-active .dot{ opacity:1; }
 
-  .panel-head h1{
-    font-size:clamp(32px,4vw,44px);
-    font-weight:800;
-    margin:0;
-    line-height:1.2;
-  }
-  .panel-head .sub{
-    margin:10px 0 0;
-    color:var(--text-faint);
-    font-size:13.5px;
-  }
+  .panel-head h1{ font-size:clamp(30px,3.8vw,42px); font-weight:800; margin:8px 0 0; line-height:1.2; }
+  .panel-head .sub{ margin:10px 0 0; color:var(--text-faint); font-size:13.5px; }
 
   .tabs{
-    display:flex;
-    gap:26px;
-    margin:30px 0 0;
+    display:flex; gap:24px; flex-wrap:wrap;
+    margin:28px 0 0;
     border-bottom:1px solid var(--line);
   }
   .tab{
-    position:relative;
-    padding:0 2px 13px;
-    font-size:15px;
-    font-weight:600;
-    color:var(--text-faint);
+    position:relative; padding:0 2px 13px;
+    font-size:15px; font-weight:600; color:var(--text-faint);
     transition:color .15s ease;
   }
   .tab:hover{ color:var(--text-soft); }
   .tab.is-active{ color:var(--text); }
   .tab.is-active::after{
-    content:'';
-    position:absolute;
-    left:0; right:0; bottom:-1px;
-    height:2px;
-    background:var(--accent);
+    content:''; position:absolute; left:0; right:0; bottom:-1px;
+    height:2px; background:var(--accent);
   }
-  .tab .n{
-    margin-left:7px;
-    font-size:12px;
-    font-weight:600;
-    color:var(--text-faint);
-  }
+  .tab .n{ margin-left:7px; font-size:12px; font-weight:600; color:var(--text-faint); }
   .tab.is-active .n{ color:var(--accent); }
 
+  /* ── 항목 줄 ──────────────────────────────── */
   .items{ margin-top:4px; }
   .item{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:18px 2px;
+    display:flex; align-items:center; gap:14px;
+    padding:17px 2px;
     border-bottom:1px solid var(--line);
   }
-  .item-name{
-    flex:1;
-    min-width:0;
-    font-size:15.5px;
-    font-weight:600;
-    line-height:1.45;
-  }
-  a.item{ text-decoration:none; transition:padding-left .15s ease; }
+  .item-main{ flex:1; min-width:0; }
+  .item-name{ font-size:15.5px; font-weight:600; line-height:1.45; }
+  .item-where{ margin-top:4px; font-size:12.5px; color:var(--text-faint); }
+  a.item{ transition:padding-left .15s ease; }
   a.item:hover{ padding-left:8px; }
   a.item:hover .go{ color:var(--accent); }
   .go{
-    font-size:13.5px;
-    font-weight:600;
-    color:var(--text-faint);
-    white-space:nowrap;
-    transition:color .15s ease;
+    font-size:13.5px; font-weight:600; color:var(--text-faint);
+    white-space:nowrap; transition:color .15s ease;
   }
 
   .status-pill{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:11.5px;
-    font-weight:700;
-    padding:3px 10px 3px 8px;
-    border-radius:999px;
-    background:var(--surface-2);
-    color:var(--text-soft);
-    white-space:nowrap;
-    flex:none;
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:700;
+    padding:3px 10px 3px 8px; border-radius:999px;
+    background:var(--surface-2); color:var(--text-soft);
+    white-space:nowrap; flex:none;
   }
-  .status-pill::before{
-    content:'';
-    width:6px; height:6px;
-    border-radius:50%;
-  }
+  .status-pill::before{ content:''; width:6px; height:6px; border-radius:50%; }
   .status-pill.is-open::before{ background:#5FBF4A; }
   .status-pill.is-closed::before{ background:#D9694A; }
 
-  .doc-actions{ display:flex; gap:8px; flex:none; }
-  .doc-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:7px 14px;
-    border-radius:8px;
+  .btns{ display:flex; gap:8px; flex:none; flex-wrap:wrap; justify-content:flex-end; }
+  .btn{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:7px 14px; border-radius:8px;
     border:1px solid var(--line);
     color:var(--text-soft);
-    font-size:13px;
-    font-weight:600;
-    text-decoration:none;
+    font-size:13px; font-weight:600;
     white-space:nowrap;
     transition:border-color .15s ease, color .15s ease, background .15s ease;
   }
-  .doc-btn:hover{ border-color:var(--accent); color:var(--accent); }
-  .doc-btn.download{
-    background:rgba(255,255,255,.06);
-    color:var(--text);
-  }
-  .doc-btn.download:hover{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:var(--bg);
-  }
-  .doc-btn .ico{ font-size:11px; line-height:1; }
+  .btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .btn.is-download{ background:rgba(255,255,255,.06); color:var(--text); }
+  .btn.is-download:hover{ background:var(--accent); border-color:var(--accent); color:var(--bg); }
+  .btn .ico{ font-size:11px; line-height:1; }
 
-  @media(max-width:520px){
-    .item{ flex-wrap:wrap; gap:10px; padding:16px 2px; }
-    .item-name{ flex:1 0 100%; }
+  @media(max-width:560px){
+    .item{ flex-wrap:wrap; gap:10px; padding:15px 2px; }
+    .item-main{ flex:1 0 100%; }
+    .btns{ justify-content:flex-start; }
     a.item:hover{ padding-left:0; }
   }
 
-  .empty{
-    padding:56px 4px;
-    color:var(--text-faint);
-    font-size:14px;
-    line-height:1.7;
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:700;
+    padding:3px 9px; border-radius:999px;
+    border:1px solid var(--line); color:var(--text-soft);
+    flex:none;
   }
-  .loading{ padding:60px 4px; color:var(--text-faint); font-size:14px; }
+  .chip .dot{ width:6px; height:6px; border-radius:50%; }
 
-  .updated{
-    margin-top:40px;
-    color:var(--text-faint);
-    font-size:12.5px;
-  }
+  .results-head{ margin:0 0 8px; font-size:15px; color:var(--text-soft); }
+  .empty{ padding:52px 4px; color:var(--text-faint); font-size:14px; line-height:1.7; }
+  .loading{ padding:60px 4px; color:var(--text-faint); font-size:14px; }
+  .updated{ margin-top:40px; color:var(--text-faint); font-size:12.5px; }
 </style>
 </head>
 <body>
 
 <div class="shell">
+  <header class="topbar">
+    <a class="brand" href="#">K예술영재 프로젝트</a>
+    <div class="search">
+      <span class="ico">⌕</span>
+      <input id="q" type="search" placeholder="자료 이름, 분야, 탭으로 검색" autocomplete="off">
+      <button class="clear" id="qClear" type="button" hidden aria-label="검색어 지우기">✕</button>
+    </div>
+  </header>
+
   <div id="setupBanner" class="setup-banner" style="display:none;"></div>
   <div id="view"><div class="loading">불러오는 중…</div></div>
 </div>
@@ -354,35 +301,39 @@
    구글시트 → Apps Script 웹앱 → 이 페이지 순서로 데이터가 흘러갑니다.
 
    시트 형식 (1행은 머리글, 2행부터 한 줄이 버튼 하나):
-   ┌─────────────────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
-   │ A 항목                   │ B 무용        │ C 미술        │ D 음악        │ E 전통예술     │
-   ├─────────────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-   │ 웹 리플렛                 │ https://…    │ https://…    │ https://…    │ https://…    │
-   │ 만족도 조사 문항           │ https://forms│ https://forms│ https://forms│ https://forms│
-   │ 만족도 조사 문항 상태       │ 진행          │ 마감          │ 진행          │              │
-   │ 웹 만족도 분석 보고서       │ https://…    │              │ https://…    │ https://…    │
-   │ 리플렛                    │ https://drive│ https://drive│ https://drive│ https://drive│
-   │ 마스터클래스 안내지         │              │              │ https://drive│              │
-   │ 만족도 조사 분석 보고서     │ https://drive│ https://drive│ https://drive│ https://drive│
-   └─────────────────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
+   ┌──────────┬─────────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+   │ A 탭 명   │ B 항목               │ C 세부항목  │ D 무용        │ E 미술        │ F 음악        │ G 전통예술     │
+   ├──────────┼─────────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
+   │ 온라인    │ 만족도 조사 문항      │            │ https://…    │ https://…    │ https://…    │ https://…    │
+   │          │ 만족도 조사 문항 상태 │            │ 진행          │ 마감          │ 진행          │              │
+   │          │ 웹 리플렛            │            │ https://…    │ https://…    │ https://…    │ https://…    │
+   │ 문서파일  │ 리플렛               │ 보기        │ https://drive│ https://drive│ https://drive│ https://drive│
+   │          │                     │ 다운로드     │ https://drive│ https://drive│ https://drive│ https://drive│
+   │          │ 마스터클래스 안내지   │ 보기        │              │              │ https://drive│              │
+   └──────────┴─────────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 
-   - A열 "항목"에 적은 글자가 그대로 버튼 이름이 됩니다.
-   - 칸이 비어 있으면 그 분야에는 그 버튼이 생기지 않습니다.
-   - 구글 드라이브 파일 주소는 "문서파일" 탭에 [보기] [다운로드]로,
-     그 밖의 주소는 "온라인" 탭에 열기 버튼으로 자동 분류됩니다.
-   - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 이름의 "○○" 버튼에
-     진행/마감 배지를 붙입니다. (예: "만족도 조사 문항 상태")
-   - 줄을 추가하면 버튼이 늘고, 지우면 사라집니다. 순서도 시트 줄 순서를 따릅니다.
+   - A열 탭 명이 상단 탭이 됩니다. 새 이름을 적으면 탭이 자동으로 생깁니다.
+     탭 순서는 시트에 처음 나온 순서를 따릅니다.
+   - A열·B열을 비워두면 바로 위 줄의 값을 이어받습니다.
+     (한 항목에 버튼을 여러 개 달 때 씁니다)
+   - C열 세부항목은 버튼 안에 표시됩니다. 세부항목이 "다운로드"이고 링크가
+     구글 드라이브 파일이면 바로 내려받기 주소로 바꿔줍니다.
+   - C열이 비어 있으면 항목 줄 전체가 링크가 됩니다.
+   - D열부터는 분야입니다. 머리글에 분야 이름을 적으면 그 열이 그 분야로 갑니다.
+   - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 탭의 "○○" 항목에
+     진행/마감 배지를 붙입니다.
    ============================================================ */
   const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
+
+  const FIELD_COL_START = 3;   // D열부터 분야
 
 /* ============================================================ */
 
   const FIELD_META = {
-    '무용':  { key:'dance', color:'var(--dance)', order:1, image:'https://k-brainc.github.io/kriga/img/b.webp' },
-    '미술':  { key:'art',   color:'var(--art)',   order:2, image:'https://k-brainc.github.io/kriga/img/a.jpg' },
-    '음악':  { key:'music', color:'var(--music)', order:3, image:'https://k-brainc.github.io/kriga/img/m.jpg' },
-    '전통예술': { key:'trad', color:'var(--trad)', order:4, image:'https://k-brainc.github.io/kriga/img/t.webp' },
+    '무용':  { key:'dance', color:'#E08AA6', order:1, image:'https://k-brainc.github.io/kriga/img/b.webp' },
+    '미술':  { key:'art',   color:'#7FC17A', order:2, image:'https://k-brainc.github.io/kriga/img/a.jpg' },
+    '음악':  { key:'music', color:'#7FB0DD', order:3, image:'https://k-brainc.github.io/kriga/img/m.jpg' },
+    '전통예술': { key:'trad', color:'#E08A5E', order:4, image:'https://k-brainc.github.io/kriga/img/t.webp' },
   };
 
   const FIELD_ALIASES = {
@@ -392,9 +343,8 @@
     '전통예술':'전통예술', '전통':'전통예술', 'traditional arts':'전통예술', 'traditional':'전통예술',
   };
 
-  /* 시트를 아예 불러오지 못했을 때만 쓰는 예비 목록입니다.
-     시트가 정상이면 이 값은 화면에 나오지 않습니다. */
-  const FALLBACK_ROWS = [
+  /* 시트를 아예 불러오지 못했을 때만 쓰는 예비 목록입니다. */
+  const FALLBACK_FILES = [
     ['무용','리플렛','14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn'],
     ['무용','만족도 조사 분석 보고서','1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb'],
     ['미술','리플렛','1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu'],
@@ -405,11 +355,16 @@
     ['음악','만족도 조사 분석 보고서','1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX'],
     ['전통예술','리플렛','1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT'],
     ['전통예술','만족도 조사 분석 보고서','1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv'],
-  ].map(r => ({
-    field:r[0], title:r[1],
-    url:'https://drive.google.com/file/d/' + r[2] + '/view?usp=sharing',
-    status:'',
-  }));
+  ];
+  function fallbackRows(){
+    const out = [];
+    FALLBACK_FILES.forEach(f => {
+      const url = 'https://drive.google.com/file/d/' + f[2] + '/view?usp=sharing';
+      out.push({ tab:'문서파일', title:f[1], detail:'보기',     field:f[0], url, status:'' });
+      out.push({ tab:'문서파일', title:f[1], detail:'다운로드', field:f[0], url, status:'' });
+    });
+    return out;
+  }
 
   let ROWS = [];
 
@@ -418,18 +373,17 @@
     return String(v == null ? '' : v)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  function trim(v){ return v == null ? '' : String(v).trim(); }
 
   function normalizeField(raw){
-    if(!raw) return null;
-    const t = String(raw).trim();
-    if(FIELD_ALIASES[t]) return FIELD_ALIASES[t];
-    const lower = t.toLowerCase();
-    return FIELD_ALIASES[lower] || null;
+    const t = trim(raw);
+    if(!t) return null;
+    return FIELD_ALIASES[t] || FIELD_ALIASES[t.toLowerCase()] || null;
   }
 
   function statusOf(raw){
-    if(raw === undefined || raw === null || String(raw).trim() === '') return null;
-    const v = String(raw).trim().toLowerCase();
+    const v = trim(raw).toLowerCase();
+    if(!v) return null;
     if(['마감','마감중','closed','close','종료','off','no','n'].includes(v)) return 'closed';
     return 'open';
   }
@@ -440,123 +394,170 @@
            || String(url).match(/[?&]id=([-\w]{20,})/);
     return m ? m[1] : null;
   }
-  function viewUrl(url){
-    const id = driveFileId(url);
-    return id ? 'https://drive.google.com/file/d/' + id + '/view' : url;
-  }
-  function downloadUrl(url){
-    const id = driveFileId(url);
-    return id ? 'https://drive.google.com/uc?export=download&id=' + id : null;
+  function isDownloadLabel(label){ return /다운로드|내려받|download/i.test(label || ''); }
+
+  /* 세부항목이 "다운로드"면 드라이브 링크를 바로 내려받기 주소로 바꿉니다. */
+  function resolveUrl(row){
+    const id = driveFileId(row.url);
+    if(!id) return row.url;
+    return isDownloadLabel(row.detail)
+      ? 'https://drive.google.com/uc?export=download&id=' + id
+      : 'https://drive.google.com/file/d/' + id + '/view';
   }
 
   function fieldByKey(key){
     return Object.keys(FIELD_META).find(f => FIELD_META[f].key === key) || null;
   }
   function fieldOrder(){
-    return Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
+    const known = Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
+    return known.filter(f => ROWS.some(r => r.field === f)).length
+      ? known
+      : known;
   }
 
-  /* ── 시트 응답 해석 ────────────────────────── */
+  /* ── 시트 해석 ────────────────────────────── */
   function gridToRows(values){
-    if(!values.length) return [];
+    if(!values || values.length < 2) return [];
     const header = values[0] || [];
+
     const cols = [];
-    for(let c = 1; c < header.length; c++){
-      const name = (header[c] == null ? '' : String(header[c])).trim();
-      if(name) cols.push({ col:c, name:name });
+    for(let c = FIELD_COL_START; c < header.length; c++){
+      const f = normalizeField(header[c]);
+      if(f) cols.push({ col:c, field:f });
     }
     if(!cols.length) return [];
 
     const rows = [];
     const statuses = [];
+    let lastTab = '';
+    let lastTitle = '';
+
     for(let r = 1; r < values.length; r++){
       const line = values[r] || [];
-      const title = (line[0] == null ? '' : String(line[0])).trim();
+      const tab = trim(line[0]) || lastTab;
+      const title = trim(line[1]) || lastTitle;
+      const detail = trim(line[2]);
+      lastTab = tab;
+      lastTitle = title;
       if(!title) continue;
 
+      // "○○ 상태" 줄은 버튼이 아니라 배지
       if(/상태$/.test(title)){
         const base = title.replace(/상태$/, '').trim();
         if(!base) continue;
         const map = {};
-        cols.forEach(c => { map[c.name] = (line[c.col] == null ? '' : String(line[c.col])).trim(); });
-        statuses.push({ base, map });
+        cols.forEach(c => { map[c.field] = trim(line[c.col]); });
+        statuses.push({ tab, base, map });
+        lastTitle = '';
         continue;
       }
+
       cols.forEach(c => {
-        const url = (line[c.col] == null ? '' : String(line[c.col])).trim();
+        const url = trim(line[c.col]);
         if(!url) return;
-        rows.push({ fieldRaw:c.name, title, url, status:'' });
+        rows.push({ tab: tab || '자료', title, detail, field:c.field, url, status:'' });
       });
     }
+
     statuses.forEach(s => {
       rows.forEach(row => {
-        if(row.title === s.base && s.map[row.fieldRaw]) row.status = s.map[row.fieldRaw];
+        if(row.title === s.base && (!s.tab || row.tab === s.tab) && s.map[row.field]){
+          row.status = s.map[row.field];
+        }
       });
     });
+    return rows;
+  }
 
+  /* 웹앱이 이미 해석된 줄 목록을 보내는 경우도 받아둡니다. */
+  function toRows(data){
+    if(Array.isArray(data)){
+      if(Array.isArray(data[0])) return gridToRows(data);
+      const rows = [];
+      data.forEach(r => {
+        if(!r) return;
+        const f = normalizeField(r.field || r['분야']);
+        const url = trim(r.url || r.link || r['링크']);
+        if(!f || !url) return;
+        rows.push({
+          tab: trim(r.tab || r['탭'] || r['탭명']) || '자료',
+          title: trim(r.title || r['항목'] || r['제목']) || '자료',
+          detail: trim(r.detail || r['세부항목']),
+          field: f, url,
+          status: trim(r.status || r['상태']),
+        });
+      });
+      return rows;
+    }
+    if(data && typeof data === 'object' && Array.isArray(data.values)) return gridToRows(data.values);
+    return [];
+  }
+
+  /* ── 묶기 ────────────────────────────────── */
+  function tabsFor(field){
     const out = [];
-    rows.forEach(r => {
-      const f = normalizeField(r.fieldRaw);
-      if(f) out.push({ field:f, title:r.title || '자료', url:r.url, status:r.status });
+    ROWS.forEach(r => {
+      if(r.field === field && !out.includes(r.tab)) out.push(r.tab);
     });
     return out;
   }
 
-  function toRows(data){
-    const rows = [];
-    const push = (field, title, url, status) => {
-      const f = normalizeField(field);
-      const u = (url == null ? '' : String(url)).trim();
-      if(!f || !u) return;
-      rows.push({
-        field:f,
-        title:(title == null ? '' : String(title)).trim() || '자료',
-        url:u,
-        status:(status == null ? '' : String(status)).trim(),
-      });
-    };
-
-    if(Array.isArray(data)){
-      if(Array.isArray(data[0])) return gridToRows(data);
-      data.forEach(r => {
-        if(!r) return;
-        push(r.field || r['분야'], r.title || r['제목'], r.url || r.link || r['링크'], r.status || r['상태']);
-      });
-      return rows;
-    }
-
-    if(data && typeof data === 'object'){
-      Object.keys(data).forEach(key => {
-        const entry = data[key];
-        if(Array.isArray(entry)){
-          entry.forEach(r => push(key, r.title || r['제목'], r.url || r.link || r['링크'], r.status || r['상태']));
-          return;
-        }
-        if(!entry || typeof entry !== 'object') return;
-        push(key, '웹 리플렛', entry.leaflet, '');
-        push(key, '만족도 조사 문항', entry.survey, entry.status || '진행');
-        push(key, '웹 만족도 분석 보고서', entry.report, '');
-      });
-    }
-    return rows;
+  /* 같은 항목이 이어지면 버튼을 한 줄로 모읍니다. */
+  function groupItems(list){
+    const out = [];
+    list.forEach(r => {
+      const last = out[out.length - 1];
+      if(last && last.title === r.title){
+        last.buttons.push(r);
+        if(!last.status && r.status) last.status = r.status;
+      }else{
+        out.push({ title:r.title, tab:r.tab, field:r.field, status:r.status, buttons:[r] });
+      }
+    });
+    return out;
   }
 
-  /* 온라인(웹 주소) / 문서파일(드라이브 파일)로 나눕니다. */
-  function splitFor(field){
-    const mine = ROWS.filter(r => r.field === field);
-    return {
-      online: mine.filter(r => !driveFileId(r.url)),
-      docs:   mine.filter(r => driveFileId(r.url)),
-    };
+  /* ── 항목 그리기 ──────────────────────────── */
+  function pill(status){
+    const st = statusOf(status);
+    if(!st) return '';
+    return '<span class="status-pill is-' + st + '">' + (st === 'open' ? '진행중' : '마감') + '</span>';
   }
 
-  /* ── 화면 ────────────────────────────────── */
+  function buttonHtml(row){
+    const dl = isDownloadLabel(row.detail);
+    const label = row.detail || '열기';
+    const ico = dl ? '<span class="ico">↓</span>' : '';
+    const target = dl ? '' : ' target="_blank" rel="noopener"';
+    return '<a class="btn' + (dl ? ' is-download' : '') + '" href="' + esc(resolveUrl(row)) + '"' + target + '>' +
+      ico + esc(label) + '</a>';
+  }
+
+  function itemHtml(item, opts){
+    opts = opts || {};
+    const where = opts.where
+      ? '<div class="item-where">' + esc(opts.where) + '</div>'
+      : '';
+    const main = '<div class="item-main"><div class="item-name">' + esc(item.title) + '</div>' + where + '</div>';
+
+    // 세부항목이 없는 단일 링크는 줄 전체를 링크로
+    if(item.buttons.length === 1 && !item.buttons[0].detail){
+      const row = item.buttons[0];
+      return '<a class="item" href="' + esc(resolveUrl(row)) + '" target="_blank" rel="noopener">' +
+        main + pill(item.status) + '<span class="go">열기 →</span></a>';
+    }
+    return '<div class="item">' + main + pill(item.status) +
+      '<span class="btns">' + item.buttons.map(buttonHtml).join('') + '</span></div>';
+  }
+
+  /* ── 화면: 분야 선택 ──────────────────────── */
   function renderPicker(){
     const picks = fieldOrder().map(f => {
       const meta = FIELD_META[f];
-      const s = splitFor(f);
-      const total = s.online.length + s.docs.length;
-      const count = total ? ('온라인 ' + s.online.length + '건 · 문서 ' + s.docs.length + '건') : '준비중';
+      const mine = ROWS.filter(r => r.field === f);
+      const items = groupItems(mine).length;
+      const tabs = tabsFor(f).length;
+      const count = items ? (items + '건 · 탭 ' + tabs + '개') : '준비중';
       return '<button class="pick" style="--accent:' + meta.color + '" data-key="' + meta.key + '">' +
         '<img src="' + meta.image + '" alt="">' +
         '<span class="tint"></span><span class="scrim"></span>' +
@@ -568,7 +569,7 @@
       '<div class="picker">' +
         '<p class="kicker">K-Arts Gifted Project · 2026</p>' +
         '<h1>K예술영재 프로젝트</h1>' +
-        '<p class="lede">분야를 선택하면 만족도 조사 문항, 웹 리플렛, 분석 보고서와 내려받을 수 있는 문서를 한자리에서 볼 수 있습니다.</p>' +
+        '<p class="lede">분야를 선택하면 만족도 조사 문항, 리플렛, 분석 보고서와 내려받을 수 있는 문서를 한자리에서 볼 수 있습니다. 위쪽 검색창으로 전체 분야를 한 번에 찾을 수도 있습니다.</p>' +
         '<div class="picks">' + picks + '</div>' +
       '</div>';
 
@@ -577,44 +578,32 @@
     });
   }
 
-  function onlineItem(row){
-    const st = statusOf(row.status);
-    const pill = st
-      ? '<span class="status-pill is-' + st + '">' + (st === 'open' ? '진행중' : '마감') + '</span>'
-      : '';
-    return '<a class="item" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
-      '<span class="item-name">' + esc(row.title) + '</span>' + pill +
-      '<span class="go">열기 →</span></a>';
-  }
-
-  function docItem(row){
-    const dl = downloadUrl(row.url);
-    return '<div class="item">' +
-      '<span class="item-name">' + esc(row.title) + '</span>' +
-      '<span class="doc-actions">' +
-        '<a class="doc-btn" href="' + esc(viewUrl(row.url)) + '" target="_blank" rel="noopener">보기</a>' +
-        (dl ? '<a class="doc-btn download" href="' + esc(dl) + '" rel="noopener"><span class="ico">↓</span>다운로드</a>' : '') +
-      '</span></div>';
-  }
-
-  function renderField(field, tab){
+  /* ── 화면: 분야 상세 ──────────────────────── */
+  function renderField(field, tabWanted){
     const meta = FIELD_META[field];
-    const s = splitFor(field);
-    const list = tab === 'docs' ? s.docs : s.online;
+    const tabs = tabsFor(field);
+    const tab = tabs.includes(tabWanted) ? tabWanted : (tabs[0] || null);
+    const list = tab ? ROWS.filter(r => r.field === field && r.tab === tab) : [];
+    const items = groupItems(list);
+    const total = groupItems(ROWS.filter(r => r.field === field)).length;
 
     const rail = fieldOrder().map(f => {
       const m = FIELD_META[f];
       const on = f === field;
-      return '<a class="rail-item' + (on ? ' is-active' : '') + '" style="color:' +
-        (on ? m.color : '') + '" href="#/' + m.key + '">' +
+      return '<a class="rail-item' + (on ? ' is-active' : '') + '"' +
+        (on ? ' style="color:' + m.color + '"' : '') + ' href="#/' + m.key + '">' +
         '<span class="dot" style="background:' + m.color + '"></span>' + f + '</a>';
     }).join('');
 
-    const body = list.length
-      ? '<div class="items">' + list.map(tab === 'docs' ? docItem : onlineItem).join('') + '</div>'
-      : '<div class="empty">' + (tab === 'docs'
-          ? '등록된 문서 파일이 없습니다. 시트의 해당 분야 칸에 구글 드라이브 링크를 넣으면 여기에 표시됩니다.'
-          : '등록된 온라인 링크가 없습니다. 시트의 해당 분야 칸에 주소를 넣으면 여기에 표시됩니다.') + '</div>';
+    const tabBar = tabs.map(t => {
+      const n = groupItems(ROWS.filter(r => r.field === field && r.tab === t)).length;
+      return '<button class="tab' + (t === tab ? ' is-active' : '') + '" data-tab="' + esc(t) + '">' +
+        esc(t) + '<span class="n">' + n + '</span></button>';
+    }).join('');
+
+    const body = items.length
+      ? '<div class="items">' + items.map(it => itemHtml(it)).join('') + '</div>'
+      : '<div class="empty">이 분야에 등록된 링크가 없습니다. 시트의 해당 분야 열에 주소를 넣으면 여기에 표시됩니다.</div>';
 
     document.getElementById('view').innerHTML =
       '<div class="browser" style="--accent:' + meta.color + '">' +
@@ -624,14 +613,11 @@
         '</aside>' +
         '<main>' +
           '<div class="panel-head">' +
-            '<p class="kicker">K예술영재 프로젝트 · 2026</p>' +
+            '<p class="kicker">2026 워크숍 자료실</p>' +
             '<h1>' + field + '</h1>' +
-            '<p class="sub">온라인 ' + s.online.length + '건 · 문서파일 ' + s.docs.length + '건</p>' +
+            '<p class="sub">전체 ' + total + '건</p>' +
           '</div>' +
-          '<div class="tabs">' +
-            '<button class="tab' + (tab !== 'docs' ? ' is-active' : '') + '" data-tab="online">온라인<span class="n">' + s.online.length + '</span></button>' +
-            '<button class="tab' + (tab === 'docs' ? ' is-active' : '') + '" data-tab="docs">문서파일<span class="n">' + s.docs.length + '</span></button>' +
-          '</div>' +
+          (tabs.length ? '<div class="tabs">' + tabBar + '</div>' : '') +
           body +
           '<p class="updated">마지막 갱신: ' + new Date().toLocaleString('ko-KR') + '</p>' +
         '</main>' +
@@ -639,17 +625,52 @@
 
     document.querySelectorAll('.tab').forEach(el => {
       el.addEventListener('click', () => {
-        location.hash = '#/' + meta.key + '/' + el.dataset.tab;
+        location.hash = '#/' + meta.key + '/' + encodeURIComponent(el.dataset.tab);
       });
     });
   }
 
+  /* ── 화면: 검색 결과 ──────────────────────── */
+  function renderSearch(query){
+    const q = query.trim().toLowerCase();
+    const hit = ROWS.filter(r =>
+      (r.title + ' ' + r.detail + ' ' + r.tab + ' ' + r.field).toLowerCase().includes(q));
+
+    let body = '';
+    let count = 0;
+    if(!hit.length){
+      body = '<div class="empty">"' + esc(query) + '"에 해당하는 자료가 없습니다.</div>';
+    }else{
+      body = fieldOrder().map(f => {
+        const mine = hit.filter(r => r.field === f);
+        if(!mine.length) return '';
+        const meta = FIELD_META[f];
+        const group = groupItems(mine);
+        count += group.length;
+        const items = group.map(it => itemHtml(it, { where: it.tab })).join('');
+        return '<section style="--accent:' + meta.color + '; margin-top:32px;">' +
+          '<span class="chip"><span class="dot" style="background:' + meta.color + '"></span>' + f + '</span>' +
+          '<div class="items">' + items + '</div></section>';
+      }).join('');
+    }
+
+    document.getElementById('view').innerHTML =
+      '<div class="results">' +
+        '<p class="results-head">"' + esc(query) + '" 검색 결과 ' + count + '건</p>' +
+        body +
+      '</div>';
+  }
+
   /* ── 주소(#) 기반 화면 전환 ─────────────────── */
   function route(){
+    const q = document.getElementById('q').value;
+    document.getElementById('qClear').hidden = !q;
+    if(q.trim()){ renderSearch(q); return; }
+
     const parts = (location.hash || '').replace(/^#\/?/, '').split('/').filter(Boolean);
     const field = parts.length ? fieldByKey(parts[0]) : null;
     if(!field){ renderPicker(); return; }
-    renderField(field, parts[1] === 'docs' ? 'docs' : 'online');
+    renderField(field, parts[1] ? decodeURIComponent(parts[1]) : null);
     window.scrollTo(0, 0);
   }
 
@@ -667,15 +688,30 @@
       ROWS = toRows(data);
       console.log('[디버그] 버튼으로 만든 줄:', ROWS);
       if(!ROWS.length){
-        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 1행의 분야 이름(무용·미술·음악·전통예술)과 A열 항목 이름을 확인해 주세요.');
+        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 1행 D열부터의 분야 이름(무용·미술·음악·전통예술)과 A~C열 구성을 확인해 주세요.');
       }
     }catch(err){
       console.error(err);
-      ROWS = FALLBACK_ROWS;
+      ROWS = fallbackRows();
       notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 모든 사용자)를 확인해 주세요. 아래 문서 파일은 정상적으로 내려받을 수 있습니다.');
     }
     route();
   }
+
+  const qInput = document.getElementById('q');
+  let timer = null;
+  qInput.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(route, 140);
+  });
+  qInput.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){ qInput.value = ''; route(); }
+  });
+  document.getElementById('qClear').addEventListener('click', () => {
+    qInput.value = '';
+    qInput.focus();
+    route();
+  });
 
   window.addEventListener('hashchange', route);
   load();
