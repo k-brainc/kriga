@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K예술영재 프로젝트 | 만족도조사 · 분석보고서</title>
+<title>K예술영재 프로젝트 | 만족도조사 · 자료실</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 <style>
   :root{
     --bg:#14171D;
     --surface:#1D212B;
+    --surface-2:#232833;
     --text:#EDE7D8;
     --text-soft:#B7AF9C;
     --text-faint:#7C7669;
@@ -21,6 +22,8 @@
     --art:#7FC17A;
     --music:#7FB0DD;
     --trad:#E08A5E;
+
+    --accent:var(--brass);
   }
   *{box-sizing:border-box;}
   body{
@@ -31,165 +34,242 @@
     color:var(--text);
     word-break:keep-all;
     overflow-wrap:break-word;
+    -webkit-font-smoothing:antialiased;
   }
+  a{ color:inherit; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
 
-  .layout{
-    max-width:1280px;
+  .shell{
+    max-width:1200px;
     margin:0 auto;
-    padding:64px 24px 100px;
-    display:grid;
-    grid-template-columns:440px 1fr;
-    gap:48px;
-    align-items:start;
-  }
-  @media(max-width:860px){
-    .layout{ grid-template-columns:1fr; gap:8px; }
+    padding:56px 24px 96px;
   }
 
-  header{
-    position:sticky;
-    top:48px;
-  }
-  header .kicker{
-    font-size:13.5px;
+  .kicker{
+    font-size:13px;
+    letter-spacing:.02em;
     color:var(--text-faint);
-    margin-bottom:18px;
   }
-  header h1{
-    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
+
+  .setup-banner{
+    margin:0 0 28px;
+    padding:14px 18px;
+    background:#3A3120;
+    border:1px solid var(--brass);
+    border-radius:6px;
+    color:var(--brass-deep);
+    font-size:13.5px;
+    line-height:1.6;
+  }
+
+  /* ── 분야 선택 화면 ─────────────────────────── */
+  .picker h1{
     font-weight:800;
-    font-size:clamp(56px,6.3vw,78px);
-    line-height:1.2;
-    color:var(--text);
-    margin:0;
+    font-size:clamp(44px,5.6vw,72px);
+    line-height:1.18;
+    margin:16px 0 0;
   }
-  header p{
+  .picker .lede{
     color:var(--text-soft);
-    font-size:15px;
-    line-height:1.7;
-    margin:32px 0 0;
-    max-width:34ch;
+    font-size:15.5px;
+    line-height:1.75;
+    max-width:46ch;
+    margin:20px 0 44px;
   }
-  header .rule{
-    display:none;
-  }
-  @media(max-width:860px){
-    header{ position:static; padding-bottom:32px; border-bottom:1px solid var(--line); margin-bottom:32px; }
-    header p{ max-width:52ch; }
-  }
-
-  .grid{
+  .picks{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:32px 28px;
-    align-items:start;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
   }
-  @media(max-width:1080px){
-    .grid{ grid-template-columns:1fr; }
-  }
+  @media(max-width:900px){ .picks{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:520px){ .picks{ grid-template-columns:1fr; gap:14px; } }
 
-  .tile{
-    background:var(--surface);
+  .pick{
+    position:relative;
+    display:block;
+    width:100%;
+    padding:0;
+    text-align:left;
     border-radius:14px;
     overflow:hidden;
-    box-shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 32px rgba(0,0,0,.4);
-    transition:transform .2s ease, box-shadow .2s ease;
-  }
-  .tile:hover{
-    transform:translateY(-3px);
-    box-shadow:0 4px 12px rgba(0,0,0,.35), 0 22px 44px rgba(0,0,0,.5);
-  }
-
-  .tile .photo{
-    position:relative;
-    aspect-ratio:4/3;
+    aspect-ratio:3/4;
     background:
       radial-gradient(120% 140% at 15% 0%, color-mix(in srgb, var(--accent) 55%, white) 0%, transparent 55%),
-      linear-gradient(150deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, #0C0E12) 100%);
-    overflow:hidden;
+      linear-gradient(150deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 50%, #0C0E12) 100%);
+    box-shadow:0 14px 32px rgba(0,0,0,.4);
+    transition:transform .18s ease, box-shadow .18s ease;
   }
-  .tile .photo img{
+  @media(max-width:520px){ .pick{ aspect-ratio:16/9; } }
+  .pick:hover{ transform:translateY(-3px); box-shadow:0 22px 44px rgba(0,0,0,.5); }
+  .pick img{
     position:absolute; inset:0;
     width:100%; height:100%;
     object-fit:cover;
-    filter:grayscale(0.85) contrast(1.05) brightness(0.85);
+    filter:grayscale(.85) contrast(1.05) brightness(.82);
   }
-  .tile .photo .tint{
+  .pick .tint{
     position:absolute; inset:0;
     background:var(--accent);
     mix-blend-mode:color;
     opacity:.9;
   }
-  .tile .photo .tint::after{
-    content:'';
-    position:absolute; inset:0;
-    background:linear-gradient(150deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 100%);
-    mix-blend-mode:multiply;
-  }
-  .tile .photo .mark{
-    position:absolute;
-    right:18px; bottom:12px;
-    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
-    font-size:76px;
-    line-height:1;
-    color:rgba(255,255,255,.22);
-    user-select:none;
-  }
-  .tile .photo .num{
-    position:absolute;
-    top:16px; left:18px;
-    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
-    font-size:14px;
-    color:rgba(255,255,255,.85);
-  }
-  .tile .photo .scrim{
+  .pick .scrim{
     position:absolute; left:0; right:0; bottom:0;
-    height:60%;
-    background:linear-gradient(180deg, transparent, rgba(15,20,30,.62));
+    height:70%;
+    background:linear-gradient(180deg, transparent, rgba(12,16,24,.78));
   }
-  .tile .photo .caption{
+  .pick .foot{
     position:absolute;
-    left:18px; right:18px; bottom:14px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:10px;
+    left:18px; right:18px; bottom:16px;
   }
-  .tile .photo h2{
-    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',sans-serif;
-    font-weight:600;
-    font-size:23px;
-    color:#fff;
+  .pick h2{
+    font-size:24px;
+    font-weight:700;
     margin:0;
-  }
-  .leaflet-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:7px 14px;
-    border-radius:999px;
-    background:rgba(255,255,255,.16);
-    border:1px solid rgba(255,255,255,.4);
-    backdrop-filter:blur(3px);
     color:#fff;
-    font-weight:600;
+  }
+  .pick .count{
+    display:block;
+    margin-top:6px;
     font-size:12.5px;
-    text-decoration:none;
-    transition:background .15s ease;
-    white-space:nowrap;
-  }
-  .leaflet-btn:hover{
-    background:rgba(255,255,255,.3);
-  }
-  .leaflet-btn.disabled{
-    color:rgba(255,255,255,.5);
-    border-color:rgba(255,255,255,.22);
-    cursor:default;
-    pointer-events:none;
+    color:rgba(255,255,255,.72);
   }
 
-  .tile .body{
-    padding:18px 20px 22px;
+  /* ── 분야 상세 화면 ─────────────────────────── */
+  .browser{
+    display:grid;
+    grid-template-columns:212px 1fr;
+    gap:44px;
+    align-items:start;
+  }
+  @media(max-width:820px){
+    .browser{ grid-template-columns:1fr; gap:24px; }
+  }
+
+  .rail{ position:sticky; top:56px; }
+  @media(max-width:820px){ .rail{ position:static; } }
+
+  .rail .home{
+    display:inline-flex;
+    text-decoration:none;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    color:var(--text-faint);
+    padding:4px 0;
+  }
+  .rail .home:hover{ color:var(--text); }
+  .rail nav{
+    margin-top:22px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  @media(max-width:820px){
+    .rail nav{
+      flex-direction:row;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:4px;
+      margin-top:16px;
+    }
+  }
+  .rail-item{
+    display:flex;
+    text-decoration:none;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--text-soft);
+    white-space:nowrap;
+    transition:background .15s ease, color .15s ease;
+  }
+  .rail-item .dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:currentColor;
+    opacity:.55;
+    flex:none;
+  }
+  .rail-item:hover{ background:var(--surface); color:var(--text); }
+  .rail-item.is-active{
+    background:var(--surface);
+    color:var(--text);
+  }
+  .rail-item.is-active .dot{ opacity:1; }
+
+  .panel-head h1{
+    font-size:clamp(32px,4vw,44px);
+    font-weight:800;
+    margin:0;
+    line-height:1.2;
+  }
+  .panel-head .sub{
+    margin:10px 0 0;
+    color:var(--text-faint);
+    font-size:13.5px;
+  }
+
+  .tabs{
+    display:flex;
+    gap:26px;
+    margin:30px 0 0;
+    border-bottom:1px solid var(--line);
+  }
+  .tab{
+    position:relative;
+    padding:0 2px 13px;
+    font-size:15px;
+    font-weight:600;
+    color:var(--text-faint);
+    transition:color .15s ease;
+  }
+  .tab:hover{ color:var(--text-soft); }
+  .tab.is-active{ color:var(--text); }
+  .tab.is-active::after{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:-1px;
+    height:2px;
+    background:var(--accent);
+  }
+  .tab .n{
+    margin-left:7px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-faint);
+  }
+  .tab.is-active .n{ color:var(--accent); }
+
+  .items{ margin-top:4px; }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:18px 2px;
+    border-bottom:1px solid var(--line);
+  }
+  .item-name{
+    flex:1;
+    min-width:0;
+    font-size:15.5px;
+    font-weight:600;
+    line-height:1.45;
+  }
+  a.item{ text-decoration:none; transition:padding-left .15s ease; }
+  a.item:hover{ padding-left:8px; }
+  a.item:hover .go{ color:var(--accent); }
+  .go{
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--text-faint);
+    white-space:nowrap;
+    transition:color .15s ease;
   }
 
   .status-pill{
@@ -197,197 +277,75 @@
     align-items:center;
     gap:6px;
     font-size:11.5px;
-    font-weight:600;
+    font-weight:700;
     padding:3px 10px 3px 8px;
     border-radius:999px;
-    background:rgba(0,0,0,.08);
-    color:var(--surface);
+    background:var(--surface-2);
+    color:var(--text-soft);
+    white-space:nowrap;
+    flex:none;
   }
   .status-pill::before{
     content:'';
     width:6px; height:6px;
     border-radius:50%;
   }
-  .status-pill.is-open::before{ background:#3E8A2E; }
-  .status-pill.is-closed::before{ background:#B8492B; }
+  .status-pill.is-open::before{ background:#5FBF4A; }
+  .status-pill.is-closed::before{ background:#D9694A; }
 
-  .link-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    align-items:center;
-  }
-  .link-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    padding:9px 16px;
-    border-radius:8px;
-    border:1px solid var(--line);
-    background:var(--surface);
-    color:var(--text);
-    font-weight:600;
-    font-size:14px;
-    text-decoration:none;
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
-  }
-  .link-btn:hover{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:var(--surface);
-  }
-  .link-btn.primary{
-    background:var(--text);
-    border-color:var(--text);
-    color:var(--surface);
-  }
-  .link-btn.primary:hover{
-    background:var(--accent);
-    border-color:var(--accent);
-  }
-  .link-btn .arrow{
-    font-size:13px;
-    line-height:1;
-  }
-  .link-btn.disabled{
-    color:var(--text-faint);
-    background:transparent;
-    border:1px dashed var(--line);
-    cursor:default;
-    pointer-events:none;
-  }
-
-  .docs{
-    margin-top:16px;
-    padding-top:14px;
-    border-top:1px solid var(--line);
-  }
-  .docs-title{
-    font-size:12.5px;
-    color:var(--text-faint);
-    margin:0 0 8px;
-  }
-  .doc-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:8px 0;
-  }
-  .doc-row + .doc-row{
-    border-top:1px solid rgba(255,255,255,.05);
-  }
-  .doc-name{
-    flex:1;
-    min-width:0;
-    font-size:13.5px;
-    line-height:1.4;
-    color:var(--text-soft);
-  }
-  .doc-actions{
-    display:flex;
-    gap:6px;
-    flex:none;
-  }
+  .doc-actions{ display:flex; gap:8px; flex:none; }
   .doc-btn{
     display:inline-flex;
     align-items:center;
     gap:5px;
-    padding:5px 11px;
-    border-radius:7px;
+    padding:7px 14px;
+    border-radius:8px;
     border:1px solid var(--line);
-    background:transparent;
     color:var(--text-soft);
-    font-size:12.5px;
+    font-size:13px;
     font-weight:600;
     text-decoration:none;
     white-space:nowrap;
     transition:border-color .15s ease, color .15s ease, background .15s ease;
   }
-  .doc-btn:hover,
-  .doc-btn:focus-visible{
-    border-color:var(--accent);
-    color:var(--accent);
-  }
+  .doc-btn:hover{ border-color:var(--accent); color:var(--accent); }
   .doc-btn.download{
-    background:rgba(255,255,255,.05);
+    background:rgba(255,255,255,.06);
     color:var(--text);
   }
-  .doc-btn.download:hover,
-  .doc-btn.download:focus-visible{
+  .doc-btn.download:hover{
     background:var(--accent);
     border-color:var(--accent);
-    color:var(--surface);
+    color:var(--bg);
   }
-  .doc-btn .ico{
-    font-size:11px;
-    line-height:1;
-  }
-  .doc-row.is-empty .doc-name{ color:var(--text-faint); }
-  .doc-row.is-empty .doc-btn{
-    border-style:dashed;
-    color:var(--text-faint);
-    background:transparent;
-    pointer-events:none;
-  }
-  @media(max-width:340px){
-    .doc-row{ flex-wrap:wrap; gap:6px; }
-    .doc-name{ flex:1 0 100%; }
+  .doc-btn .ico{ font-size:11px; line-height:1; }
+
+  @media(max-width:520px){
+    .item{ flex-wrap:wrap; gap:10px; padding:16px 2px; }
+    .item-name{ flex:1 0 100%; }
+    a.item:hover{ padding-left:0; }
   }
 
-  .updated{
-    text-align:right;
-    color:var(--text-faint);
-    font-size:12.5px;
-    margin-top:32px;
-  }
-
-  .setup-banner{
-    margin:0 0 28px;
-    padding:16px 20px;
-    background:#3A3120;
-    border:1px solid var(--brass);
-    border-radius:4px;
-    color:var(--brass-deep);
-    font-size:13.5px;
-    line-height:1.6;
-  }
-  .setup-banner code{
-    background:rgba(0,0,0,.06);
-    padding:1px 6px;
-    border-radius:4px;
-    font-size:12.5px;
-  }
-
-  .state-msg{
-    text-align:center;
-    padding:60px 20px;
+  .empty{
+    padding:56px 4px;
     color:var(--text-faint);
     font-size:14px;
+    line-height:1.7;
   }
+  .loading{ padding:60px 4px; color:var(--text-faint); font-size:14px; }
 
-  @media(max-width:560px){
-    .row{ grid-template-columns:1fr; gap:8px; }
-    .row .num{ padding-top:0; }
+  .updated{
+    margin-top:40px;
+    color:var(--text-faint);
+    font-size:12.5px;
   }
 </style>
 </head>
 <body>
 
-<div class="layout">
-<header>
-  <div class="kicker">K-Arts Gifted Project · 2026</div>
-  <h1>K예술영재<br>프로젝트</h1>
-  <p>분야별 만족도 조사 문항에 참여하고, 웹 리플렛과 웹 분석 보고서를 열어보거나 PDF 파일로 내려받을 수 있습니다.</p>
-  <div class="rule"></div>
-</header>
-
-<main>
+<div class="shell">
   <div id="setupBanner" class="setup-banner" style="display:none;"></div>
-  <div id="content">
-    <div class="state-msg">불러오는 중…</div>
-  </div>
-  <div id="updatedWrap"></div>
-</main>
+  <div id="view"><div class="loading">불러오는 중…</div></div>
 </div>
 
 <script>
@@ -410,9 +368,8 @@
 
    - A열 "항목"에 적은 글자가 그대로 버튼 이름이 됩니다.
    - 칸이 비어 있으면 그 분야에는 그 버튼이 생기지 않습니다.
-   - 링크가 구글 드라이브 파일 주소면 자료 (PDF) 칸에 [보기] [다운로드] 두 버튼으로,
-     그 밖의 주소면 카드 위쪽 버튼으로 자동 배치됩니다.
-   - 항목 이름에 "리플렛"이 들어간 웹 주소는 카드 사진 위 버튼이 됩니다.
+   - 구글 드라이브 파일 주소는 "문서파일" 탭에 [보기] [다운로드]로,
+     그 밖의 주소는 "온라인" 탭에 열기 버튼으로 자동 분류됩니다.
    - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 이름의 "○○" 버튼에
      진행/마감 배지를 붙입니다. (예: "만족도 조사 문항 상태")
    - 줄을 추가하면 버튼이 늘고, 지우면 사라집니다. 순서도 시트 줄 순서를 따릅니다.
@@ -422,34 +379,10 @@
 /* ============================================================ */
 
   const FIELD_META = {
-    '무용':  { key:'dance', color:'var(--dance)',  order:1, mark:'舞', image:'https://k-brainc.github.io/kriga/img/b.webp' },
-    '미술':  { key:'art',   color:'var(--art)',    order:2, mark:'畵', image:'https://k-brainc.github.io/kriga/img/a.jpg' },
-    '음악':  { key:'music', color:'var(--music)',  order:3, mark:'樂', image:'https://k-brainc.github.io/kriga/img/m.jpg' },
-    '전통예술': { key:'trad', color:'var(--trad)', order:4, mark:'傳', image:'https://k-brainc.github.io/kriga/img/t.webp' },
-  };
-  // 각 분야의 실제 워크숍 사진 주소를 image 자리에 넣으면 사진이 표시됩니다.
-
-  /* 시트에 아직 드라이브 링크 줄이 없는 분야에만 쓰이는 예비 목록입니다.
-     해당 분야에 드라이브 링크를 한 줄이라도 넣으면 그때부터 시트 값만 사용합니다. */
-  const FALLBACK_DOCS = {
-    '무용': [
-      { title:'리플렛', url:'https://drive.google.com/file/d/14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn/view?usp=sharing' },
-      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb/view?usp=sharing' },
-    ],
-    '미술': [
-      { title:'리플렛', url:'https://drive.google.com/file/d/1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu/view?usp=sharing' },
-      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1tM_O3wf1XOUernl9tBMEtCS9JbBkpc42/view?usp=sharing' },
-    ],
-    '음악': [
-      { title:'리플렛', url:'https://drive.google.com/file/d/1Uqj0GWgrQyHuJlO-sloi_R54MTQcDPsp/view?usp=sharing' },
-      { title:'마스터클래스 안내지', url:'https://drive.google.com/file/d/1_zXAlnpoKqUhDXFwWChFc-Zbk-706h3B/view?usp=sharing' },
-      { title:'연주회 안내지', url:'https://drive.google.com/file/d/1ZNlxJr_31me-RnpvMgB7-cW1-55vakYT/view?usp=sharing' },
-      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX/view?usp=sharing' },
-    ],
-    '전통예술': [
-      { title:'리플렛', url:'https://drive.google.com/file/d/1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT/view?usp=sharing' },
-      { title:'만족도 조사 분석 보고서', url:'https://drive.google.com/file/d/1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv/view?usp=sharing' },
-    ],
+    '무용':  { key:'dance', color:'var(--dance)', order:1, image:'https://k-brainc.github.io/kriga/img/b.webp' },
+    '미술':  { key:'art',   color:'var(--art)',   order:2, image:'https://k-brainc.github.io/kriga/img/a.jpg' },
+    '음악':  { key:'music', color:'var(--music)', order:3, image:'https://k-brainc.github.io/kriga/img/m.jpg' },
+    '전통예술': { key:'trad', color:'var(--trad)', order:4, image:'https://k-brainc.github.io/kriga/img/t.webp' },
   };
 
   const FIELD_ALIASES = {
@@ -459,6 +392,28 @@
     '전통예술':'전통예술', '전통':'전통예술', 'traditional arts':'전통예술', 'traditional':'전통예술',
   };
 
+  /* 시트를 아예 불러오지 못했을 때만 쓰는 예비 목록입니다.
+     시트가 정상이면 이 값은 화면에 나오지 않습니다. */
+  const FALLBACK_ROWS = [
+    ['무용','리플렛','14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn'],
+    ['무용','만족도 조사 분석 보고서','1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb'],
+    ['미술','리플렛','1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu'],
+    ['미술','만족도 조사 분석 보고서','1tM_O3wf1XOUernl9tBMEtCS9JbBkpc42'],
+    ['음악','리플렛','1Uqj0GWgrQyHuJlO-sloi_R54MTQcDPsp'],
+    ['음악','마스터클래스 안내지','1_zXAlnpoKqUhDXFwWChFc-Zbk-706h3B'],
+    ['음악','연주회 안내지','1ZNlxJr_31me-RnpvMgB7-cW1-55vakYT'],
+    ['음악','만족도 조사 분석 보고서','1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX'],
+    ['전통예술','리플렛','1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT'],
+    ['전통예술','만족도 조사 분석 보고서','1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv'],
+  ].map(r => ({
+    field:r[0], title:r[1],
+    url:'https://drive.google.com/file/d/' + r[2] + '/view?usp=sharing',
+    status:'',
+  }));
+
+  let ROWS = [];
+
+  /* ── 도구 ────────────────────────────────── */
   function esc(v){
     return String(v == null ? '' : v)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -469,11 +424,9 @@
     const t = String(raw).trim();
     if(FIELD_ALIASES[t]) return FIELD_ALIASES[t];
     const lower = t.toLowerCase();
-    if(FIELD_ALIASES[lower]) return FIELD_ALIASES[lower];
-    return null;
+    return FIELD_ALIASES[lower] || null;
   }
 
-  /* 상태 칸: 비어 있으면 배지 없음, 값이 있으면 진행중 또는 마감 배지 */
   function statusOf(raw){
     if(raw === undefined || raw === null || String(raw).trim() === '') return null;
     const v = String(raw).trim().toLowerCase();
@@ -481,26 +434,29 @@
     return 'open';
   }
 
-  /* 구글 드라이브 공유 링크에서 파일 ID를 뽑아냅니다. */
   function driveFileId(url){
     if(!url) return null;
     const m = String(url).match(/\/file\/d\/([-\w]{20,})/)
            || String(url).match(/[?&]id=([-\w]{20,})/);
     return m ? m[1] : null;
   }
-
   function viewUrl(url){
     const id = driveFileId(url);
     return id ? 'https://drive.google.com/file/d/' + id + '/view' : url;
   }
-
   function downloadUrl(url){
     const id = driveFileId(url);
     return id ? 'https://drive.google.com/uc?export=download&id=' + id : null;
   }
 
-  /* 웹앱이 시트 격자(2차원 배열)를 그대로 보낼 때도 같은 규칙으로 펼칩니다.
-     1행: [항목, 무용, 미술, 음악, 전통예술] / 2행부터: [항목명, 링크, 링크, …] */
+  function fieldByKey(key){
+    return Object.keys(FIELD_META).find(f => FIELD_META[f].key === key) || null;
+  }
+  function fieldOrder(){
+    return Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
+  }
+
+  /* ── 시트 응답 해석 ────────────────────────── */
   function gridToRows(values){
     if(!values.length) return [];
     const header = values[0] || [];
@@ -526,14 +482,12 @@
         statuses.push({ base, map });
         continue;
       }
-
       cols.forEach(c => {
         const url = (line[c.col] == null ? '' : String(line[c.col])).trim();
         if(!url) return;
         rows.push({ fieldRaw:c.name, title, url, status:'' });
       });
     }
-
     statuses.forEach(s => {
       rows.forEach(row => {
         if(row.title === s.base && s.map[row.fieldRaw]) row.status = s.map[row.fieldRaw];
@@ -543,14 +497,11 @@
     const out = [];
     rows.forEach(r => {
       const f = normalizeField(r.fieldRaw);
-      if(!f) return;
-      out.push({ field:f, title:r.title || '자료', url:r.url, status:r.status });
+      if(f) out.push({ field:f, title:r.title || '자료', url:r.url, status:r.status });
     });
     return out;
   }
 
-  /* 웹앱 응답을 { field, title, url, status } 줄 목록으로 정리합니다.
-     새 형식(줄 목록)과 예전 형식(분야별 묶음) 둘 다 받습니다. */
   function toRows(data){
     const rows = [];
     const push = (field, title, url, status) => {
@@ -558,10 +509,10 @@
       const u = (url == null ? '' : String(url)).trim();
       if(!f || !u) return;
       rows.push({
-        field: f,
-        title: (title == null ? '' : String(title)).trim() || '자료',
-        url: u,
-        status: (status == null ? '' : String(status)).trim(),
+        field:f,
+        title:(title == null ? '' : String(title)).trim() || '자료',
+        url:u,
+        status:(status == null ? '' : String(status)).trim(),
       });
     };
 
@@ -590,84 +541,116 @@
     return rows;
   }
 
-  /* 한 분야의 줄들을 사진 위 버튼 / 웹 버튼 / PDF 목록으로 나눕니다. */
-  function groupFor(field, rows){
-    const mine = rows.filter(r => r.field === field);
-    const pdf = mine.filter(r => driveFileId(r.url));
-    const web = mine.filter(r => !driveFileId(r.url));
-
-    let leaflet = null;
-    const i = web.findIndex(r => /리플렛|leaflet/i.test(r.title));
-    if(i >= 0) leaflet = web.splice(i, 1)[0];
-
-    const docs = pdf.length ? pdf : (FALLBACK_DOCS[field] || []);
-    return { leaflet, web, docs };
+  /* 온라인(웹 주소) / 문서파일(드라이브 파일)로 나눕니다. */
+  function splitFor(field){
+    const mine = ROWS.filter(r => r.field === field);
+    return {
+      online: mine.filter(r => !driveFileId(r.url)),
+      docs:   mine.filter(r => driveFileId(r.url)),
+    };
   }
 
-  function leafletBtn(row){
-    if(!row){
-      return '<span class="leaflet-btn disabled"><span>웹 리플렛 준비중</span></span>';
-    }
-    return '<a class="leaflet-btn" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
-      '<span>' + esc(row.title) + '</span><span class="arrow">→</span></a>';
+  /* ── 화면 ────────────────────────────────── */
+  function renderPicker(){
+    const picks = fieldOrder().map(f => {
+      const meta = FIELD_META[f];
+      const s = splitFor(f);
+      const total = s.online.length + s.docs.length;
+      const count = total ? ('온라인 ' + s.online.length + '건 · 문서 ' + s.docs.length + '건') : '준비중';
+      return '<button class="pick" style="--accent:' + meta.color + '" data-key="' + meta.key + '">' +
+        '<img src="' + meta.image + '" alt="">' +
+        '<span class="tint"></span><span class="scrim"></span>' +
+        '<span class="foot"><h2>' + f + '</h2><span class="count">' + count + '</span></span>' +
+      '</button>';
+    }).join('');
+
+    document.getElementById('view').innerHTML =
+      '<div class="picker">' +
+        '<p class="kicker">K-Arts Gifted Project · 2026</p>' +
+        '<h1>K예술영재 프로젝트</h1>' +
+        '<p class="lede">분야를 선택하면 만족도 조사 문항, 웹 리플렛, 분석 보고서와 내려받을 수 있는 문서를 한자리에서 볼 수 있습니다.</p>' +
+        '<div class="picks">' + picks + '</div>' +
+      '</div>';
+
+    document.querySelectorAll('.pick').forEach(el => {
+      el.addEventListener('click', () => { location.hash = '#/' + el.dataset.key; });
+    });
   }
 
-  function webBtn(row){
+  function onlineItem(row){
     const st = statusOf(row.status);
     const pill = st
       ? '<span class="status-pill is-' + st + '">' + (st === 'open' ? '진행중' : '마감') + '</span>'
       : '';
-    const cls = st ? 'link-btn primary' : 'link-btn';
-    return '<a class="' + cls + '" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
-      '<span>' + esc(row.title) + '</span>' + pill + '<span class="arrow">→</span></a>';
+    return '<a class="item" href="' + esc(row.url) + '" target="_blank" rel="noopener">' +
+      '<span class="item-name">' + esc(row.title) + '</span>' + pill +
+      '<span class="go">열기 →</span></a>';
   }
 
-  function docRow(row){
+  function docItem(row){
     const dl = downloadUrl(row.url);
-    const dlBtn = dl
-      ? '<a class="doc-btn download" href="' + esc(dl) + '" rel="noopener"><span class="ico">↓</span><span>다운로드</span></a>'
-      : '';
-    return '<div class="doc-row">' +
-      '<div class="doc-name">' + esc(row.title) + '</div>' +
-      '<div class="doc-actions">' +
+    return '<div class="item">' +
+      '<span class="item-name">' + esc(row.title) + '</span>' +
+      '<span class="doc-actions">' +
         '<a class="doc-btn" href="' + esc(viewUrl(row.url)) + '" target="_blank" rel="noopener">보기</a>' +
-        dlBtn +
-      '</div></div>';
+        (dl ? '<a class="doc-btn download" href="' + esc(dl) + '" rel="noopener"><span class="ico">↓</span>다운로드</a>' : '') +
+      '</span></div>';
   }
 
-  function render(rows){
-    const content = document.getElementById('content');
-    const fields = Object.keys(FIELD_META).sort((a,b)=>FIELD_META[a].order-FIELD_META[b].order);
+  function renderField(field, tab){
+    const meta = FIELD_META[field];
+    const s = splitFor(field);
+    const list = tab === 'docs' ? s.docs : s.online;
 
-    content.innerHTML = '<div class="grid">' + fields.map((f, i)=>{
-        const meta = FIELD_META[f];
-        const g = groupFor(f, rows);
-        const photoInner = meta.image
-          ? '<img src="' + meta.image + '" alt="' + f + ' 분야"><div class="tint"></div>'
-          : '<span class="mark">' + meta.mark + '</span>';
+    const rail = fieldOrder().map(f => {
+      const m = FIELD_META[f];
+      const on = f === field;
+      return '<a class="rail-item' + (on ? ' is-active' : '') + '" style="color:' +
+        (on ? m.color : '') + '" href="#/' + m.key + '">' +
+        '<span class="dot" style="background:' + m.color + '"></span>' + f + '</a>';
+    }).join('');
 
-        const webBlock = g.web.length
-          ? g.web.map(webBtn).join('')
-          : '<span class="link-btn disabled"><span>링크</span><span class="arrow">준비중</span></span>';
+    const body = list.length
+      ? '<div class="items">' + list.map(tab === 'docs' ? docItem : onlineItem).join('') + '</div>'
+      : '<div class="empty">' + (tab === 'docs'
+          ? '등록된 문서 파일이 없습니다. 시트의 해당 분야 칸에 구글 드라이브 링크를 넣으면 여기에 표시됩니다.'
+          : '등록된 온라인 링크가 없습니다. 시트의 해당 분야 칸에 주소를 넣으면 여기에 표시됩니다.') + '</div>';
 
-        const docsBlock = g.docs.length
-          ? '<div class="docs"><p class="docs-title">자료 (PDF)</p>' + g.docs.map(docRow).join('') + '</div>'
-          : '';
-
-        return '<div class="tile" style="--accent:' + meta.color + '">' +
-          '<div class="photo">' + photoInner +
-            '<span class="num">' + String(i+1).padStart(2,'0') + '</span>' +
-            '<div class="scrim"></div>' +
-            '<div class="caption"><h2>' + f + '</h2>' + leafletBtn(g.leaflet) + '</div>' +
+    document.getElementById('view').innerHTML =
+      '<div class="browser" style="--accent:' + meta.color + '">' +
+        '<aside class="rail">' +
+          '<a class="home" href="#">← 분야 선택</a>' +
+          '<nav>' + rail + '</nav>' +
+        '</aside>' +
+        '<main>' +
+          '<div class="panel-head">' +
+            '<p class="kicker">K예술영재 프로젝트 · 2026</p>' +
+            '<h1>' + field + '</h1>' +
+            '<p class="sub">온라인 ' + s.online.length + '건 · 문서파일 ' + s.docs.length + '건</p>' +
           '</div>' +
-          '<div class="body">' +
-            '<div class="link-row">' + webBlock + '</div>' +
-            docsBlock +
-          '</div></div>';
-      }).join('') + '</div>';
+          '<div class="tabs">' +
+            '<button class="tab' + (tab !== 'docs' ? ' is-active' : '') + '" data-tab="online">온라인<span class="n">' + s.online.length + '</span></button>' +
+            '<button class="tab' + (tab === 'docs' ? ' is-active' : '') + '" data-tab="docs">문서파일<span class="n">' + s.docs.length + '</span></button>' +
+          '</div>' +
+          body +
+          '<p class="updated">마지막 갱신: ' + new Date().toLocaleString('ko-KR') + '</p>' +
+        '</main>' +
+      '</div>';
 
-    document.getElementById('updatedWrap').innerHTML =
-      '<div class="updated">마지막 갱신: ' + new Date().toLocaleString('ko-KR') + '</div>';
+    document.querySelectorAll('.tab').forEach(el => {
+      el.addEventListener('click', () => {
+        location.hash = '#/' + meta.key + '/' + el.dataset.tab;
+      });
+    });
+  }
+
+  /* ── 주소(#) 기반 화면 전환 ─────────────────── */
+  function route(){
+    const parts = (location.hash || '').replace(/^#\/?/, '').split('/').filter(Boolean);
+    const field = parts.length ? fieldByKey(parts[0]) : null;
+    if(!field){ renderPicker(); return; }
+    renderField(field, parts[1] === 'docs' ? 'docs' : 'online');
+    window.scrollTo(0, 0);
   }
 
   function notice(msg){
@@ -678,24 +661,23 @@
 
   async function load(){
     try{
-      const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache:'no-store' });
       const data = await res.json();
       console.log('[디버그] Apps Script 응답:', data);
-
-      const rows = toRows(data);
-      console.log('[디버그] 버튼으로 만든 줄:', rows);
-      render(rows);
-
-      if(!rows.length){
-        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 분야·제목·링크 열 이름과 분야 표기(무용/미술/음악/전통예술)를 확인해 주세요.');
+      ROWS = toRows(data);
+      console.log('[디버그] 버튼으로 만든 줄:', ROWS);
+      if(!ROWS.length){
+        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 1행의 분야 이름(무용·미술·음악·전통예술)과 A열 항목 이름을 확인해 주세요.');
       }
     }catch(err){
       console.error(err);
-      render([]);
-      notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 전체)를 확인해 주세요. 아래 PDF 자료는 정상적으로 내려받을 수 있습니다.');
+      ROWS = FALLBACK_ROWS;
+      notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 모든 사용자)를 확인해 주세요. 아래 문서 파일은 정상적으로 내려받을 수 있습니다.');
     }
+    route();
   }
 
+  window.addEventListener('hashchange', route);
   load();
 </script>
 
