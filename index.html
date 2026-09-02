@@ -313,41 +313,37 @@
 /* ============================================================
    설정 (CONFIG)
    구글시트 → Apps Script 웹앱 → 이 페이지 순서로 데이터가 흘러갑니다.
+   같은 문서의 "링크" 시트와 "평가회의" 시트, 두 장만 사용합니다.
 
-   시트 형식 (1행은 머리글, 2행부터 한 줄이 버튼 하나):
-   ┌──────────┬─────────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
-   │ A 탭 명   │ B 항목               │ C 세부항목  │ D 무용        │ E 미술        │ F 음악        │ G 전통예술     │
-   ├──────────┼─────────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-   │ 온라인    │ 만족도 조사 문항      │            │ https://…    │ https://…    │ https://…    │ https://…    │
-   │          │ 만족도 조사 문항 상태 │            │ 진행          │ 마감          │ 진행          │              │
-   │          │ 웹 리플렛            │            │ https://…    │ https://…    │ https://…    │ https://…    │
-   │ 문서파일  │ 리플렛               │ 보기        │ https://drive│ https://drive│ https://drive│ https://drive│
-   │          │                     │ 다운로드     │ https://drive│ https://drive│ https://drive│ https://drive│
-   │          │ 마스터클래스 안내지   │ 보기        │              │              │ https://drive│              │
-   └──────────┴─────────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
+   [링크 시트]
+   ┌────────┬──────────────────┬────────────┬──────────┬──────────┬──────────┬──────────┐
+   │ A 탭    │ B 항목            │ C 세부항목  │ D 무용    │ E 미술    │ F 음악    │ G 전통예술│
+   ├────────┼──────────────────┼────────────┼──────────┼──────────┼──────────┼──────────┤
+   │ 온라인  │ 만족도 조사 문항   │            │ https://…│ https://…│ https://…│ https://…│
+   │        │ 만족도 조사 문항 상태│           │ 진행      │ 마감      │ 진행      │          │
+   │        │ 웹 리플렛         │            │ https://…│ https://…│ https://…│ https://…│
+   │ 문서파일│ 리플렛            │ 보기        │ https://…│ https://…│ https://…│ https://…│
+   │        │                  │ 다운로드     │ https://…│ https://…│ https://…│ https://…│
+   └────────┴──────────────────┴────────────┴──────────┴──────────┴──────────┴──────────┘
+   - "탭"에 적은 이름이 그대로 화면 탭이 됩니다. 새 이름을 적으면 탭이 생깁니다.
+   - "항목"에 적은 이름이 버튼 줄의 이름입니다.
+   - 탭·항목 칸을 비워두면 바로 위 줄의 값을 이어받습니다.
+   - "세부항목"은 버튼 안에 표시됩니다. 비워두면 항목 줄 전체가 링크가 됩니다.
+     세부항목이 "다운로드"이고 드라이브 파일이면 내려받기 주소로 바꿔줍니다.
+   - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 이름의 항목에
+     진행/마감 배지를 붙입니다. ("상태" 열을 따로 두셔도 됩니다)
+   - 분야 열은 D열부터가 아니어도 됩니다. 머리글이 분야 이름이면 그 열을 씁니다.
+     "분야" 열 + "링크" 열로 된 세로형 표도 그대로 읽습니다.
 
-   - A열 탭 명이 상단 탭이 됩니다. 새 이름을 적으면 탭이 자동으로 생깁니다.
-     탭 순서는 시트에 처음 나온 순서를 따릅니다.
-   - A열·B열을 비워두면 바로 위 줄의 값을 이어받습니다.
-     (한 항목에 버튼을 여러 개 달 때 씁니다)
-   - C열 세부항목은 버튼 안에 표시됩니다. 세부항목이 "다운로드"이고 링크가
-     구글 드라이브 파일이면 바로 내려받기 주소로 바꿔줍니다.
-   - C열이 비어 있으면 항목 줄 전체가 링크가 됩니다.
-   - D열부터는 분야입니다. 머리글에 분야 이름을 적으면 그 열이 그 분야로 갑니다.
-   - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 탭의 "○○" 항목에
-     진행/마감 배지를 붙입니다.
-
-   평가회의 탭은 같은 문서의 "평가회의" 시트에서 따로 읽어옵니다.
-   모든 분야에 항상 표시되며, 시트 형식은 이렇습니다:
+   [평가회의 시트]
    ┌────────┬──────┬─────────────┬──────────┬────────────┬──────────────┬──────────────┐
    │ A 분야  │ B 회차│ C 일자       │ D 장소    │ E 참석      │ F 회의록      │ G 녹취        │
-   ├────────┼──────┼─────────────┼──────────┼────────────┼──────────────┼──────────────┤
-   │ 무용    │ 1차   │ 2026-04-18  │ 한예종     │ 김○○ 외 6명 │ https://drive│ https://drive│
-   │        │ 2차   │ 2026-05-16  │ 온라인     │ 김○○ 외 5명 │ https://drive│              │
    └────────┴──────┴─────────────┴──────────┴────────────┴──────────────┴──────────────┘
-   - 분야·회차·일자·장소·참석·안건·비고 열은 회의 정보로 표시됩니다.
+   - 분야·회차·일자·장소·참석·안건·비고는 회의 정보로 표시됩니다.
    - 그 밖의 열은 머리글 이름이 그대로 버튼이 됩니다. (열을 늘리면 버튼도 늘어남)
+     머리글을 "회의록 다운로드"로 적으면 바로 내려받기가 됩니다.
    - A열 분야를 비워두면 위 줄의 분야를 이어받습니다.
+   - 평가회의 탭은 시트가 비어 있어도 모든 분야에 항상 표시됩니다.
    ============================================================ */
   const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
 
@@ -443,54 +439,102 @@
       : known;
   }
 
-  /* ── 시트 해석 ────────────────────────────── */
-  function gridToRows(values){
-    if(!values || values.length < 2) return [];
-    const header = values[0] || [];
+  /* ── 시트 해석 ──────────────────────────────
+     시트 이름과 머리글을 보고 어떤 표인지 스스로 판단합니다.
+     - 머리글에 "탭"과 "항목"이 있으면 버튼 표
+       · "분야" 열이 있으면 그 열이 분야
+       · 시트 이름이 분야면 시트 전체가 그 분야 (링크 열 1개)
+       · 그 외에는 머리글이 분야 이름인 열들이 각각의 분야 (통합 표)
+     - 그 밖의 시트는 무시합니다. */
+  function findCol(header, test){
+    for(let i = 0; i < header.length; i++){ if(test(header[i], i)) return i; }
+    return -1;
+  }
 
-    const cols = [];
-    for(let c = FIELD_COL_START; c < header.length; c++){
-      const f = normalizeField(header[c]);
-      if(f) cols.push({ col:c, field:f });
+  function parseButtonSheet(sheetName, values){
+    if(!values || values.length < 2) return [];
+    const raw = values[0] || [];
+    const header = raw.map(h => trim(h).replace(/\s/g,''));
+
+    const cDetail = findCol(header, h => h.includes('세부'));
+    const cTitle  = findCol(header, (h,i) => i !== cDetail && h.includes('항목'));
+    const cTab    = findCol(header, h => h === '탭' || h.includes('탭명') || h.includes('탭이름') || h.includes('탭명'));
+    if(cTitle < 0) return [];
+
+    const cStatus = findCol(header, h => h.includes('상태'));
+    const cField  = findCol(header, h => h === '분야');
+    const usedInfo = [cTab, cTitle, cDetail, cStatus, cField];
+
+    // 링크 열 찾기
+    const linkCols = [];
+    const sheetField = normalizeField(sheetName);
+    if(cField >= 0 || sheetField){
+      const c = findCol(header, (h,i) =>
+        usedInfo.indexOf(i) < 0 && (h.includes('링크') || h.includes('주소') || /URL/i.test(h)));
+      const col = c >= 0 ? c : findCol(header, (h,i) => usedInfo.indexOf(i) < 0 && !!h);
+      if(col >= 0) linkCols.push({ col, field:null });   // field 는 줄마다 결정
+    }else{
+      header.forEach((h, i) => {
+        if(usedInfo.indexOf(i) >= 0) return;
+        const f = normalizeField(raw[i]);
+        if(f) linkCols.push({ col:i, field:f });
+      });
     }
-    if(!cols.length) return [];
+    if(!linkCols.length) return [];
 
     const rows = [];
     const statuses = [];
     let lastTab = '';
     let lastTitle = '';
+    let lastField = '';
 
     for(let r = 1; r < values.length; r++){
       const line = values[r] || [];
-      const tab = trim(line[0]) || lastTab;
-      const title = trim(line[1]) || lastTitle;
-      const detail = trim(line[2]);
+      const tab = (cTab >= 0 ? trim(line[cTab]) : '') || lastTab;
+      const title = trim(line[cTitle]) || lastTitle;
+      const detail = cDetail >= 0 ? trim(line[cDetail]) : '';
+      const status = cStatus >= 0 ? trim(line[cStatus]) : '';
       lastTab = tab;
       lastTitle = title;
       if(!title) continue;
 
+      // 줄의 분야 (분야 열 → 시트 이름 순)
+      let rowField = null;
+      if(cField >= 0){
+        const v = trim(line[cField]) || lastField;
+        lastField = v;
+        rowField = normalizeField(v);
+      }else if(sheetField){
+        rowField = sheetField;
+      }
+
       // "○○ 상태" 줄은 버튼이 아니라 배지
       if(/상태$/.test(title)){
         const base = title.replace(/상태$/, '').trim();
-        if(!base) continue;
-        const map = {};
-        cols.forEach(c => { map[c.field] = trim(line[c.col]); });
-        statuses.push({ tab, base, map });
+        if(base){
+          const map = {};
+          linkCols.forEach(c => {
+            const f = c.field || rowField;
+            if(f) map[f] = trim(line[c.col]);
+          });
+          statuses.push({ tab, base, map });
+        }
         lastTitle = '';
         continue;
       }
 
-      cols.forEach(c => {
+      linkCols.forEach(c => {
+        const field = c.field || rowField;
         const url = trim(line[c.col]);
-        if(!url) return;
-        rows.push({ tab: tab || '자료', title, detail, field:c.field, url, status:'' });
+        if(!field || !url) return;
+        rows.push({ tab: tab || '자료', title, detail, field, url, status });
       });
     }
 
-    statuses.forEach(s => {
+    statuses.forEach(st => {
       rows.forEach(row => {
-        if(row.title === s.base && (!s.tab || row.tab === s.tab) && s.map[row.field]){
-          row.status = s.map[row.field];
+        if(row.title === st.base && (!st.tab || row.tab === st.tab) && st.map[row.field] && !row.status){
+          row.status = st.map[row.field];
         }
       });
     });
@@ -588,31 +632,21 @@
     '</article>';
   }
 
-  /* 웹앱이 이미 해석된 줄 목록을 보내는 경우도 받아둡니다. */
-  function toRows(data){
-    if(Array.isArray(data)){
-      if(Array.isArray(data[0])) return gridToRows(data);
-      const rows = [];
-      data.forEach(r => {
-        if(!r) return;
-        const f = normalizeField(r.field || r['분야']);
-        const url = trim(r.url || r.link || r['링크']);
-        if(!f || !url) return;
-        rows.push({
-          tab: trim(r.tab || r['탭'] || r['탭명']) || '자료',
-          title: trim(r.title || r['항목'] || r['제목']) || '자료',
-          detail: trim(r.detail || r['세부항목']),
-          field: f, url,
-          status: trim(r.status || r['상태']),
-        });
-      });
-      return rows;
+  /* 웹앱 응답을 받아 ROWS(버튼)와 MEETINGS(평가회의)로 나눕니다.
+     웹앱은 "링크" 시트와 "평가회의" 시트만 보내옵니다. */
+  function ingest(data){
+    ROWS = [];
+    MEETINGS = [];
+    if(!data) return;
+
+    if(Array.isArray(data.link) || Array.isArray(data.meetings) || Array.isArray(data.main)){
+      ROWS = parseButtonSheet('', data.link || data.main || []);
+      MEETINGS = meetingsFromGrid(data.meetings || []);
+      return;
     }
-    if(data && typeof data === 'object'){
-      if(Array.isArray(data.main)) return gridToRows(data.main);
-      if(Array.isArray(data.values)) return gridToRows(data.values);
+    if(Array.isArray(data) && Array.isArray(data[0])){
+      ROWS = parseButtonSheet('', data);
     }
-    return [];
   }
 
   /* ── 묶기 ────────────────────────────────── */
@@ -828,21 +862,18 @@
       const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache:'no-store' });
       const data = await res.json();
       console.log('[디버그] Apps Script 응답:', data);
-      if(data && !Array.isArray(data) && (data.main || data.meetings)){
-        ROWS = toRows(data.main || []);
-        MEETINGS = meetingsFromGrid(data.meetings || []);
-      }else{
-        ROWS = toRows(data);
-        MEETINGS = [];
-      }
+      ingest(data);
       console.log('[디버그] 버튼으로 만든 줄:', ROWS);
       console.log('[디버그] 평가회의:', MEETINGS);
       if(!ROWS.length && !MEETINGS.length){
-        notice('시트에서 링크를 한 줄도 읽지 못했습니다. 1행 D열부터의 분야 이름(무용·미술·음악·전통예술)과 A~C열 구성을 확인해 주세요.');
+        const names = Array.isArray(data && data.sheetNames) ? data.sheetNames.join(' / ') : '';
+        notice('시트에서 링크를 한 줄도 읽지 못했습니다. "링크" 시트 1행에 탭·항목·세부항목과 분야 이름(무용·미술·음악·전통예술) 머리글이 있는지 확인해 주세요.' +
+          (names ? ' 지금 문서의 시트: ' + names : ''));
       }
     }catch(err){
       console.error(err);
       ROWS = fallbackRows();
+      MEETINGS = [];
       notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 모든 사용자)를 확인해 주세요. 아래 문서 파일은 정상적으로 내려받을 수 있습니다.');
     }
     route();
