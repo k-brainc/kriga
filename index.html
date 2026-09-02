@@ -264,6 +264,20 @@
     a.item:hover{ padding-left:0; }
   }
 
+  .meeting{ padding:22px 2px; border-bottom:1px solid var(--line); }
+  .meeting-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .round{
+    display:inline-flex; align-items:center;
+    padding:3px 10px; border-radius:999px;
+    background:var(--surface-2); color:var(--accent);
+    font-size:11.5px; font-weight:700; letter-spacing:.01em;
+  }
+  .meeting .date{ font-size:13.5px; font-weight:600; color:var(--text-soft); }
+  .meeting h3{ margin:12px 0 0; font-size:16.5px; font-weight:700; line-height:1.5; }
+  .meeting .meta{ margin:8px 0 0; font-size:13px; color:var(--text-faint); line-height:1.65; }
+  .meeting .btns{ margin-top:15px; justify-content:flex-start; }
+  .meeting .none{ margin-top:14px; font-size:13px; color:var(--text-faint); }
+
   .chip{
     display:inline-flex; align-items:center; gap:6px;
     font-size:11.5px; font-weight:700;
@@ -322,10 +336,23 @@
    - D열부터는 분야입니다. 머리글에 분야 이름을 적으면 그 열이 그 분야로 갑니다.
    - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 탭의 "○○" 항목에
      진행/마감 배지를 붙입니다.
+
+   평가회의 탭은 같은 문서의 "평가회의" 시트에서 따로 읽어옵니다.
+   모든 분야에 항상 표시되며, 시트 형식은 이렇습니다:
+   ┌────────┬──────┬─────────────┬──────────┬────────────┬──────────────┬──────────────┐
+   │ A 분야  │ B 회차│ C 일자       │ D 장소    │ E 참석      │ F 회의록      │ G 녹취        │
+   ├────────┼──────┼─────────────┼──────────┼────────────┼──────────────┼──────────────┤
+   │ 무용    │ 1차   │ 2026-04-18  │ 한예종     │ 김○○ 외 6명 │ https://drive│ https://drive│
+   │        │ 2차   │ 2026-05-16  │ 온라인     │ 김○○ 외 5명 │ https://drive│              │
+   └────────┴──────┴─────────────┴──────────┴────────────┴──────────────┴──────────────┘
+   - 분야·회차·일자·장소·참석·안건·비고 열은 회의 정보로 표시됩니다.
+   - 그 밖의 열은 머리글 이름이 그대로 버튼이 됩니다. (열을 늘리면 버튼도 늘어남)
+   - A열 분야를 비워두면 위 줄의 분야를 이어받습니다.
    ============================================================ */
   const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
 
-  const FIELD_COL_START = 3;   // D열부터 분야
+  const FIELD_COL_START = 3;      // 자료 시트: D열부터 분야
+  const MEETING_TAB = '평가회의';   // 모든 분야에 기본으로 붙는 탭
 
 /* ============================================================ */
 
@@ -366,7 +393,8 @@
     return out;
   }
 
-  let ROWS = [];
+  let ROWS = [];       // 자료 시트에서 만든 버튼 줄
+  let MEETINGS = [];   // 평가회의 시트에서 만든 회의
 
   /* ── 도구 ────────────────────────────────── */
   function esc(v){
@@ -469,6 +497,97 @@
     return rows;
   }
 
+  /* 평가회의 시트 해석
+     분야·회차·일자·장소·참석·안건·비고는 정보 열,
+     나머지 열은 머리글 이름을 라벨로 쓰는 링크 열로 봅니다. */
+  const MEETING_INFO_KEYS = [
+    ['field',  ['분야']],
+    ['round',  ['회차','차수']],
+    ['date',   ['일자','날짜','일시']],
+    ['place',  ['장소']],
+    ['people', ['참석','참여']],
+    ['agenda', ['안건','주제','내용','제목']],
+    ['note',   ['비고','메모']],
+  ];
+
+  function meetingsFromGrid(values){
+    if(!values || values.length < 2) return [];
+    const header = values[0] || [];
+
+    const info = {};
+    const linkCols = [];
+    for(let c = 0; c < header.length; c++){
+      const h = trim(header[c]).replace(/\s/g,'');
+      if(!h) continue;
+      const match = MEETING_INFO_KEYS.find(k =>
+        info[k[0]] === undefined && k[1].some(w => h.includes(w)));
+      if(match) info[match[0]] = c;
+      else linkCols.push({ col:c, label:trim(header[c]) });
+    }
+    if(info.field === undefined) return [];
+
+    const get = (line, key) => info[key] === undefined ? '' : trim(line[info[key]]);
+
+    const out = [];
+    let lastField = '';
+    for(let r = 1; r < values.length; r++){
+      const line = values[r] || [];
+      const rawField = trim(line[info.field]) || lastField;
+      lastField = rawField;
+      const field = normalizeField(rawField);
+      if(!field) continue;
+
+      const m = {
+        field,
+        round: get(line,'round'),
+        date: get(line,'date'),
+        place: get(line,'place'),
+        people: get(line,'people'),
+        agenda: get(line,'agenda'),
+        note: get(line,'note'),
+        links: [],
+      };
+      linkCols.forEach(c => {
+        const url = trim(line[c.col]);
+        if(url) m.links.push({ label:c.label, url });
+      });
+
+      // 아무 내용도 없는 빈 줄은 건너뜁니다
+      if(!m.round && !m.date && !m.agenda && !m.links.length) continue;
+      out.push(m);
+    }
+    return out;
+  }
+
+  function meetingText(m){
+    return [MEETING_TAB, m.field, m.round, m.date, m.place, m.people, m.agenda, m.note]
+      .concat(m.links.map(l => l.label)).join(' ');
+  }
+
+  function meetingHtml(m, opts){
+    opts = opts || {};
+    const head = [
+      m.round ? '<span class="round">' + esc(m.round) + '</span>' : '',
+      m.date ? '<span class="date">' + esc(m.date) + '</span>' : '',
+      opts.chip || '',
+    ].filter(Boolean).join('');
+
+    const title = m.agenda || ((m.round ? m.round + ' ' : '') + '평가회의');
+    const meta = [m.place, m.people, m.note].filter(Boolean).map(esc).join(' · ');
+
+    const btns = m.links.length
+      ? '<span class="btns">' + m.links.map(l =>
+          buttonHtml({ title:l.label, detail:l.label, url:l.url })).join('') + '</span>'
+      : '<p class="none">첨부된 문서가 아직 없습니다.</p>';
+
+    return '<article class="meeting">' +
+      (head ? '<div class="meeting-top">' + head + '</div>' : '') +
+      '<h3>' + esc(title) + '</h3>' +
+      (meta ? '<p class="meta">' + meta + '</p>' : '') +
+      btns +
+    '</article>';
+  }
+
   /* 웹앱이 이미 해석된 줄 목록을 보내는 경우도 받아둡니다. */
   function toRows(data){
     if(Array.isArray(data)){
@@ -489,7 +608,10 @@
       });
       return rows;
     }
-    if(data && typeof data === 'object' && Array.isArray(data.values)) return gridToRows(data.values);
+    if(data && typeof data === 'object'){
+      if(Array.isArray(data.main)) return gridToRows(data.main);
+      if(Array.isArray(data.values)) return gridToRows(data.values);
+    }
     return [];
   }
 
@@ -499,7 +621,18 @@
     ROWS.forEach(r => {
       if(r.field === field && !out.includes(r.tab)) out.push(r.tab);
     });
+    if(!out.includes(MEETING_TAB)) out.push(MEETING_TAB);   // 평가회의는 항상 마지막 탭
     return out;
+  }
+
+  function meetingsFor(field){
+    return MEETINGS.filter(m => m.field === field);
+  }
+
+  function countFor(field, tab){
+    return tab === MEETING_TAB
+      ? meetingsFor(field).length
+      : groupItems(ROWS.filter(r => r.field === field && r.tab === tab)).length;
   }
 
   /* 같은 항목이 이어지면 버튼을 한 줄로 모읍니다. */
@@ -555,7 +688,7 @@
     const picks = fieldOrder().map(f => {
       const meta = FIELD_META[f];
       const mine = ROWS.filter(r => r.field === f);
-      const items = groupItems(mine).length;
+      const items = groupItems(mine).length + meetingsFor(f).length;
       const tabs = tabsFor(f).length;
       const count = items ? (items + '건 · 탭 ' + tabs + '개') : '준비중';
       return '<button class="pick" style="--accent:' + meta.color + '" data-key="' + meta.key + '">' +
@@ -583,9 +716,11 @@
     const meta = FIELD_META[field];
     const tabs = tabsFor(field);
     const tab = tabs.includes(tabWanted) ? tabWanted : (tabs[0] || null);
-    const list = tab ? ROWS.filter(r => r.field === field && r.tab === tab) : [];
+    const isMeeting = tab === MEETING_TAB;
+    const list = (tab && !isMeeting) ? ROWS.filter(r => r.field === field && r.tab === tab) : [];
     const items = groupItems(list);
-    const total = groupItems(ROWS.filter(r => r.field === field)).length;
+    const meetings = meetingsFor(field);
+    const total = groupItems(ROWS.filter(r => r.field === field)).length + meetings.length;
 
     const rail = fieldOrder().map(f => {
       const m = FIELD_META[f];
@@ -595,15 +730,20 @@
         '<span class="dot" style="background:' + m.color + '"></span>' + f + '</a>';
     }).join('');
 
-    const tabBar = tabs.map(t => {
-      const n = groupItems(ROWS.filter(r => r.field === field && r.tab === t)).length;
-      return '<button class="tab' + (t === tab ? ' is-active' : '') + '" data-tab="' + esc(t) + '">' +
-        esc(t) + '<span class="n">' + n + '</span></button>';
-    }).join('');
+    const tabBar = tabs.map(t =>
+      '<button class="tab' + (t === tab ? ' is-active' : '') + '" data-tab="' + esc(t) + '">' +
+        esc(t) + '<span class="n">' + countFor(field, t) + '</span></button>').join('');
 
-    const body = items.length
-      ? '<div class="items">' + items.map(it => itemHtml(it)).join('') + '</div>'
-      : '<div class="empty">이 분야에 등록된 링크가 없습니다. 시트의 해당 분야 열에 주소를 넣으면 여기에 표시됩니다.</div>';
+    let body;
+    if(isMeeting){
+      body = meetings.length
+        ? '<div class="items">' + meetings.map(m => meetingHtml(m)).join('') + '</div>'
+        : '<div class="empty">등록된 평가회의가 없습니다. "평가회의" 시트에 이 분야 줄을 추가하면 여기에 표시됩니다.</div>';
+    }else{
+      body = items.length
+        ? '<div class="items">' + items.map(it => itemHtml(it)).join('') + '</div>'
+        : '<div class="empty">이 분야에 등록된 링크가 없습니다. 시트의 해당 분야 열에 주소를 넣으면 여기에 표시됩니다.</div>';
+    }
 
     document.getElementById('view').innerHTML =
       '<div class="browser" style="--accent:' + meta.color + '">' +
@@ -635,19 +775,22 @@
     const q = query.trim().toLowerCase();
     const hit = ROWS.filter(r =>
       (r.title + ' ' + r.detail + ' ' + r.tab + ' ' + r.field).toLowerCase().includes(q));
+    const hitMeetings = MEETINGS.filter(m => meetingText(m).toLowerCase().includes(q));
 
     let body = '';
     let count = 0;
-    if(!hit.length){
+    if(!hit.length && !hitMeetings.length){
       body = '<div class="empty">"' + esc(query) + '"에 해당하는 자료가 없습니다.</div>';
     }else{
       body = fieldOrder().map(f => {
         const mine = hit.filter(r => r.field === f);
-        if(!mine.length) return '';
+        const mineMeetings = hitMeetings.filter(m => m.field === f);
+        if(!mine.length && !mineMeetings.length) return '';
         const meta = FIELD_META[f];
         const group = groupItems(mine);
-        count += group.length;
-        const items = group.map(it => itemHtml(it, { where: it.tab })).join('');
+        count += group.length + mineMeetings.length;
+        const items = group.map(it => itemHtml(it, { where: it.tab })).join('') +
+          mineMeetings.map(m => meetingHtml(m)).join('');
         return '<section style="--accent:' + meta.color + '; margin-top:32px;">' +
           '<span class="chip"><span class="dot" style="background:' + meta.color + '"></span>' + f + '</span>' +
           '<div class="items">' + items + '</div></section>';
@@ -685,9 +828,16 @@
       const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache:'no-store' });
       const data = await res.json();
       console.log('[디버그] Apps Script 응답:', data);
-      ROWS = toRows(data);
+      if(data && !Array.isArray(data) && (data.main || data.meetings)){
+        ROWS = toRows(data.main || []);
+        MEETINGS = meetingsFromGrid(data.meetings || []);
+      }else{
+        ROWS = toRows(data);
+        MEETINGS = [];
+      }
       console.log('[디버그] 버튼으로 만든 줄:', ROWS);
-      if(!ROWS.length){
+      console.log('[디버그] 평가회의:', MEETINGS);
+      if(!ROWS.length && !MEETINGS.length){
         notice('시트에서 링크를 한 줄도 읽지 못했습니다. 1행 D열부터의 분야 이름(무용·미술·음악·전통예술)과 A~C열 구성을 확인해 주세요.');
       }
     }catch(err){
