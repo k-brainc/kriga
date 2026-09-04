@@ -61,6 +61,7 @@
   .setup-panel h2{font-family:var(--serif-kr); font-size:18px; margin:0 0 10px;}
   .setup-panel p{font-size:13.5px; color:var(--ink-soft); line-height:1.8; margin:0 0 10px;}
   .setup-panel ol{font-size:13.5px; line-height:2; padding-left:20px; margin:0 0 12px;}
+  .setup-panel ul{font-size:13px; line-height:1.9; padding-left:20px; margin:0 0 12px; color:var(--ink-soft);}
   .setup-panel code{background:var(--cream); border:1px solid var(--line); border-radius:4px; padding:1px 7px; font-size:12.5px; color:var(--navy-deep);}
   .setup-panel .err{color:#b3564a; font-weight:600; font-size:13px;}
 
@@ -146,7 +147,7 @@
 
   .no-data{padding:34px; text-align:center; color:var(--ink-soft); font-size:13px;}
 
-  /* text-response movements (6,7,8,10) shown as tabs */
+  /* text-response movements shown as tabs */
   .tabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
   .tab-btn{
     font-size:12.5px; font-weight:600; padding:8px 16px; border:1px solid var(--line);
@@ -272,12 +273,21 @@
 <script>
 /* ============================================================
    설정 (CONFIG)
+
+   ① SHEET_URL 에 응답이 쌓이는 구글시트 주소를 붙여넣으세요.
+   ② SHEET_NAME 에 그 문서 안의 탭 이름을 적으세요. (여기서는 "전통예술")
+   ③ 시트 공유를 "링크가 있는 모든 사용자 · 뷰어"로 바꿔주세요.
+      (Apps Script 배포는 필요 없습니다. 브라우저가 시트를 직접 읽습니다)
+
+   FIELD_MAP 은 내부 이름 ↔ 시트 1행 머리글의 연결입니다.
+   머리글이 "2-1. 프로그램 내용…"처럼 뒤에 설명이 붙어 있어도
+   앞부분이 같으면 알아서 찾아 연결합니다.
    ============================================================ */
 const CONFIG = {
-  // Apps Script 웹앱 주소 (조사 링크 시트와 동일한 배포를 재사용합니다)
-  API_URL: 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec',
+  // 응답이 쌓이는 구글시트 주소 (통째로 붙여넣기)
+  SHEET_URL: 'https://docs.google.com/spreadsheets/d/1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310/edit',
 
-  // 응답이 쌓이는 탭 이름
+  // 그 문서 안에서 응답이 쌓이는 탭 이름
   SHEET_NAME: '전통예술',
 
   REFRESH_INTERVAL_SEC: 30,
@@ -338,25 +348,111 @@ const TEXT_MOVEMENTS = [
 
 let charts = {};
 let allRows = [];
+let sheetHeaders = [];      // 시트 1행에서 실제로 읽은 머리글
+let matchedFields = [];     // FIELD_MAP 중 실제로 연결된 항목
 let currentTextMovement = TEXT_MOVEMENTS[0].key;
 
 const NAVY = '#2f4f62', GOLD = '#eec97a', GOLD_DEEP = '#c9973f', LINE = '#e7ddc4', INK_SOFT = '#6b6459';
 
-async function fetchSheet(){
-  const url = `${CONFIG.API_URL}?action=responses&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}&_=${Date.now()}`;
-  const res = await fetch(url, { cache: 'no-store' });
-  if(!res.ok) throw new Error('데이터 응답 오류 (' + res.status + ')');
-  const data = await res.json();
-  if(data && data.error) throw new Error(data.error);
-  return data;
+/* ---------- 시트 직접 읽기 ---------- */
+function sheetId(){
+  const m = String(CONFIG.SHEET_URL).match(/\/d\/([-\w]{20,})/);
+  return m ? m[1] : '';
 }
 
-function mapRow(raw){
-  const out = {};
-  Object.entries(CONFIG.FIELD_MAP).forEach(([key, header]) => {
-    out[key] = raw[header] !== undefined ? raw[header] : '';
+function csvUrl(){
+  return 'https://docs.google.com/spreadsheets/d/' + sheetId() +
+    '/gviz/tq?tqx=out:csv&headers=0' +
+    (CONFIG.SHEET_NAME ? '&sheet=' + encodeURIComponent(CONFIG.SHEET_NAME) : '') +
+    '&_=' + Date.now();
+}
+
+/* 따옴표와 줄바꿈을 지키는 CSV 파서 */
+function parseCsv(text){
+  const rows = [];
+  let row = [], cell = '', quoted = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(quoted){
+      if(c === '"'){
+        if(text[i+1] === '"'){ cell += '"'; i++; }
+        else quoted = false;
+      }else cell += c;
+    }else if(c === '"'){ quoted = true; }
+    else if(c === ','){ row.push(cell); cell = ''; }
+    else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
+    else if(c !== '\r'){ cell += c; }
+  }
+  if(cell !== '' || row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(v => (v || '').trim() !== ''));
+}
+
+async function fetchSheet(){
+  if(!sheetId()) throw new Error('CONFIG.SHEET_URL 에 구글시트 주소가 없습니다.');
+
+  let res;
+  try{
+    res = await fetch(csvUrl(), { cache:'no-store' });
+  }catch(e){
+    throw new Error('시트에 접근하지 못했습니다. 공유 설정이 "링크가 있는 모든 사용자"인지 확인해주세요.');
+  }
+  const text = await res.text();
+
+  if(!res.ok){
+    throw new Error('시트를 읽지 못했습니다 (HTTP ' + res.status + ')');
+  }
+  if(/^\s*</.test(text) || /accounts\.google\.com/.test(text.slice(0, 500))){
+    throw new Error('구글 로그인 화면이 돌아왔습니다. 시트 공유를 "링크가 있는 모든 사용자 · 뷰어"로 바꿔주세요.');
+  }
+  if(text.indexOf('google.visualization.Query.setResponse') >= 0 || /^\s*\/\*/.test(text)){
+    const m = text.match(/"detailed_message":"(.*?)"/) || text.match(/"message":"(.*?)"/);
+    const reason = m ? m[1].replace(/\\u003c[^\\]*?\\u003e/g, '') : '';
+    throw new Error('"' + CONFIG.SHEET_NAME + '" 탭을 찾지 못했습니다. ' + (reason || '탭 이름을 확인해주세요.'));
+  }
+
+  const grid = parseCsv(text);
+  if(grid.length < 2) throw new Error('"' + CONFIG.SHEET_NAME + '" 탭에 아직 응답이 없습니다.');
+  return grid;
+}
+
+/* 시트 머리글과 FIELD_MAP 을 연결합니다.
+   완전히 같은 이름이 없으면 앞부분이 일치하는 머리글을 찾습니다.
+   (예: FIELD_MAP 의 "2-1" ↔ 시트의 "2-1. 프로그램 내용 및 구성이…") */
+function buildColumnIndex(headerRow){
+  const norm = s => (s || '').toString().trim();
+  const headers = headerRow.map(norm);
+  const index = {};
+
+  Object.entries(CONFIG.FIELD_MAP).forEach(([key, label]) => {
+    const want = norm(label);
+    let col = headers.findIndex(h => h === want);
+    if(col < 0){
+      col = headers.findIndex(h => h && (
+        h.startsWith(want + '.') || h.startsWith(want + ' ') ||
+        h.startsWith(want + ')') || h.startsWith(want + '_')
+      ));
+    }
+    if(col < 0 && want.length >= 3){
+      col = headers.findIndex(h => h && h.indexOf(want) >= 0);
+    }
+    if(col >= 0) index[key] = col;
   });
-  return out;
+  return { index, headers };
+}
+
+function mapRows(grid){
+  const { index, headers } = buildColumnIndex(grid[0]);
+  sheetHeaders = headers.filter(Boolean);
+  matchedFields = Object.keys(index);
+
+  return grid.slice(1).map(line => {
+    const out = {};
+    Object.keys(CONFIG.FIELD_MAP).forEach(key => {
+      const col = index[key];
+      out[key] = col === undefined ? '' : (line[col] === undefined ? '' : String(line[col]).trim());
+    });
+    return out;
+  });
 }
 
 function toNum(v){ const n = parseFloat(v); return isNaN(n) ? null : n; }
@@ -630,7 +726,7 @@ function renderScaleChart(canvasId, items, rows, movementLabel){
   if(movementLabel) renderInsight(insightId, movementLabel, items, rows);
 }
 
-/* ---------- Movement 10 : most satisfying program type ---------- */
+/* ---------- 2-2 : most satisfying program type ---------- */
 function renderProgramChart(rows){
   const counts = countBy(rows, 'q2_program');
   if(!Object.keys(counts).length){ resetChartCard('chartM2b', '아직 응답 데이터가 없습니다.'); return; }
@@ -674,7 +770,7 @@ function renderTrend(rows){
   });
 }
 
-/* ---------- text-response movements (6, 7, 8, 10) ---------- */
+/* ---------- text-response movements (5, 6, 7, 9) ---------- */
 function renderResponseTabs(){
   document.getElementById('responseTabs').innerHTML = TEXT_MOVEMENTS.map(m => `
     <button class="tab-btn ${m.key===currentTextMovement?'active':''}" data-key="${m.key}">${m.label}</button>
@@ -754,20 +850,25 @@ function showSetupNotice(message){
   const panel = document.getElementById('setupNotice');
   panel.style.display = 'block';
   document.getElementById('dashboard').style.display = 'none';
+
+  const headerList = sheetHeaders.length
+    ? `<p>시트에서 읽은 1행 머리글입니다. <code>FIELD_MAP</code>의 오른쪽 값과 비교해보세요.</p>
+       <ul>${sheetHeaders.map(h => `<li><code>${escapeHtml(h)}</code></li>`).join('')}</ul>`
+    : '';
+
   panel.innerHTML = `
     <h2>설정이 필요합니다</h2>
     ${message ? `<p class="err">${escapeHtml(message)}</p>` : ''}
     <p>이 페이지 하단 &lt;script&gt; 안의 <code>CONFIG</code> 값을 확인해주세요.</p>
     <ol>
-      <li><code>API_URL</code>이 Apps Script 웹앱 주소로 올바르게 설정되어 있는지 확인합니다.</li>
-      <li>Apps Script 배포의 "액세스 권한이 있는 사용자"가 <b>전체</b>로 설정되어 있는지 확인합니다.</li>
-      <li><code>SHEET_NAME</code>이 응답이 쌓이는 실제 탭 이름과 정확히 일치하는지 확인합니다.</li>
+      <li>시트 공유가 <b>"링크가 있는 모든 사용자 · 뷰어"</b>인지 확인합니다.</li>
+      <li><code>SHEET_URL</code>이 응답이 쌓이는 시트 주소인지 확인합니다.</li>
+      <li><code>SHEET_NAME</code>이 실제 탭 이름(<code>${escapeHtml(CONFIG.SHEET_NAME)}</code>)과 정확히 일치하는지 확인합니다.</li>
     </ol>
-    <p>실제 시트 헤더가 <code>FIELD_MAP</code>과 다르게 되어 있다면, <code>FIELD_MAP</code>의 오른쪽 값을 실제 헤더 텍스트로 바꿔주세요.</p>
+    ${headerList}
   `;
 }
 
-/* ---------- main load ---------- */
 /* ---------- 종합 시사점 (auto-generated implications) ---------- */
 function renderImplications(rows){
   const el = document.getElementById('implicationsCard');
@@ -821,19 +922,21 @@ function renderImplications(rows){
   </ul>`;
 }
 
+/* ---------- main load ---------- */
 async function loadData(isManual){
   const btn = document.getElementById('refreshBtn');
   if(isManual) btn.classList.add('spinning');
 
-  if(!CONFIG.API_URL){
-    showSetupNotice(null);
-    if(isManual) btn.classList.remove('spinning');
-    return;
-  }
-
   try{
-    const raw = await fetchSheet();
-    allRows = raw.map(mapRow).filter(r => Object.values(r).some(v => v !== '' && v !== null && v !== undefined));
+    const grid = await fetchSheet();
+    allRows = mapRows(grid).filter(r => Object.values(r).some(v => v !== '' && v !== null && v !== undefined));
+    console.log('[디버그] 시트 머리글:', sheetHeaders);
+    console.log('[디버그] 연결된 항목:', matchedFields);
+    console.log('[디버그] 응답 줄:', allRows);
+
+    if(!matchedFields.length){
+      throw new Error('시트 머리글과 FIELD_MAP이 하나도 연결되지 않았습니다.');
+    }
   }catch(err){
     console.error(err);
     showSetupNotice(err.message || '데이터를 불러오지 못했습니다.');
@@ -874,9 +977,9 @@ async function loadData(isManual){
 
 document.getElementById('refreshBtn').addEventListener('click', ()=>loadData(true));
 
-if(CONFIG.API_URL){
+if(sheetId()){
   const sourceBtn = document.getElementById('sourceDataBtn');
-  sourceBtn.href = 'https://docs.google.com/spreadsheets/d/1U2ygyV5qxzxNoNMn26IRg6Fk3nI8HxPk0wEeVoxx310/edit';
+  sourceBtn.href = 'https://docs.google.com/spreadsheets/d/' + sheetId() + '/edit';
   sourceBtn.style.display = 'flex';
 }
 
