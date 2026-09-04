@@ -312,10 +312,20 @@
 <script>
 /* ============================================================
    설정 (CONFIG)
-   구글시트 → Apps Script 웹앱 → 이 페이지 순서로 데이터가 흘러갑니다.
-   같은 문서의 "링크" 시트와 "평가회의" 시트, 두 장만 사용합니다.
 
-   [링크 시트]
+   ① 아래 SHEET_URL 에 구글시트 주소를 통째로 붙여넣으세요.
+      (Apps Script 배포는 필요 없습니다. 브라우저가 시트를 직접 읽습니다)
+
+   ② 시트 공유를 "링크가 있는 모든 사용자 · 뷰어"로 바꿔주세요.
+      이 설정이 안 되어 있으면 화면이 비어 보입니다.
+
+   ③ 시트 안에 탭 두 장을 두시면 됩니다. 이름은 그대로 두셔도 됩니다.
+      · 첫 번째 탭(시트1) = 자료 링크
+      · 두 번째 탭(시트2) = 평가회의
+      순서로 찾으므로 시트1 / 시트2 / Sheet1 / 링크 / 평가회의 어느 이름이든 됩니다.
+
+   ── 시트1 : 자료 링크 ──────────────────────────
+   1행에 이 머리글을 그대로 넣어주세요.
    ┌────────┬──────────────────┬────────────┬──────────┬──────────┬──────────┬──────────┐
    │ A 탭    │ B 항목            │ C 세부항목  │ D 무용    │ E 미술    │ F 음악    │ G 전통예술│
    ├────────┼──────────────────┼────────────┼──────────┼──────────┼──────────┼──────────┤
@@ -332,10 +342,8 @@
      세부항목이 "다운로드"이고 드라이브 파일이면 내려받기 주소로 바꿔줍니다.
    - 항목 이름이 "○○ 상태"인 줄은 버튼이 되지 않고, 같은 이름의 항목에
      진행/마감 배지를 붙입니다. ("상태" 열을 따로 두셔도 됩니다)
-   - 분야 열은 D열부터가 아니어도 됩니다. 머리글이 분야 이름이면 그 열을 씁니다.
-     "분야" 열 + "링크" 열로 된 세로형 표도 그대로 읽습니다.
 
-   [평가회의 시트]
+   ── 시트2 : 평가회의 ───────────────────────────
    ┌────────┬──────┬─────────────┬──────────┬────────────┬──────────────┬──────────────┐
    │ A 분야  │ B 회차│ C 일자       │ D 장소    │ E 참석      │ F 회의록      │ G 녹취        │
    └────────┴──────┴─────────────┴──────────┴────────────┴──────────────┴──────────────┘
@@ -344,8 +352,20 @@
      머리글을 "회의록 다운로드"로 적으면 바로 내려받기가 됩니다.
    - A열 분야를 비워두면 위 줄의 분야를 이어받습니다.
    - 평가회의 탭은 시트가 비어 있어도 모든 분야에 항상 표시됩니다.
+
+   화면이 비어 보이면 상단에 진단 상자가 뜹니다. 어느 단계에서 막혔는지
+   거기에 그대로 적히니, 그 내용을 보고 고치시면 됩니다.
    ============================================================ */
-  const LINK_API_URL = 'https://script.google.com/macros/s/AKfycbyATIckZ-DIO3wxiVxXoO3l5CreV8Y4JO45eCmi0m4OHHQ993D6ed5OCd2N-pVkdEvDHg/exec';
+
+  // 구글시트 주소를 통째로 붙여넣으세요 (/edit 까지 있어도 됩니다)
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1wDbUTo4Wxo_t3VJMqVDnKbthBpdQZTgX10wQ7wlpq1M/edit';
+
+  // 탭 이름을 직접 지정하고 싶을 때만 채우세요. 비워두면 순서로 찾습니다.
+  const SHEET1_NAME = '';   // 자료 링크 (비우면 첫 번째 탭)
+  const SHEET2_NAME = '';   // 평가회의 (비우면 두 번째 탭)
+
+  // 평가회의 탭을 이름으로 찾을 때 시도하는 후보들
+  const SHEET2_CANDIDATES = ['평가회의', '시트2', 'Sheet2', '평가 회의', '회의'];
 
   const FIELD_COL_START = 3;      // 자료 시트: D열부터 분야
   const MEETING_TAB = '평가회의';   // 모든 분야에 기본으로 붙는 탭
@@ -365,29 +385,6 @@
     '음악':'음악', 'music':'음악',
     '전통예술':'전통예술', '전통':'전통예술', 'traditional arts':'전통예술', 'traditional':'전통예술',
   };
-
-  /* 시트를 아예 불러오지 못했을 때만 쓰는 예비 목록입니다. */
-  const FALLBACK_FILES = [
-    ['무용','리플렛','14NkDIaKCOnEvOv0ZapOYobRwiRLCgbUn'],
-    ['무용','만족도 조사 분석 보고서','1NkOKKWRjnKESPyCF5gxJEHGGDI6oSJzb'],
-    ['미술','리플렛','1Al1Do0ng8LqXtPxx_YpxKWiX7x-MwHiu'],
-    ['미술','만족도 조사 분석 보고서','1tM_O3wf1XOUernl9tBMEtCS9JbBkpc42'],
-    ['음악','리플렛','1Uqj0GWgrQyHuJlO-sloi_R54MTQcDPsp'],
-    ['음악','마스터클래스 안내지','1_zXAlnpoKqUhDXFwWChFc-Zbk-706h3B'],
-    ['음악','연주회 안내지','1ZNlxJr_31me-RnpvMgB7-cW1-55vakYT'],
-    ['음악','만족도 조사 분석 보고서','1DWH01hbmnI6Q5_csZejIX8OytWyKLQeX'],
-    ['전통예술','리플렛','1_e6n1CtpSQiCdyLDXufNpcAALEvSw6ZT'],
-    ['전통예술','만족도 조사 분석 보고서','1sdaGmI84anC8sR43WvQK_x8KNJ5NuZwv'],
-  ];
-  function fallbackRows(){
-    const out = [];
-    FALLBACK_FILES.forEach(f => {
-      const url = 'https://drive.google.com/file/d/' + f[2] + '/view?usp=sharing';
-      out.push({ tab:'문서파일', title:f[1], detail:'보기',     field:f[0], url, status:'' });
-      out.push({ tab:'문서파일', title:f[1], detail:'다운로드', field:f[0], url, status:'' });
-    });
-    return out;
-  }
 
   let ROWS = [];       // 자료 시트에서 만든 버튼 줄
   let MEETINGS = [];   // 평가회의 시트에서 만든 회의
@@ -851,30 +848,148 @@
     window.scrollTo(0, 0);
   }
 
-  function notice(msg){
+  /* ── 진단 ────────────────────────────────── */
+  const DIAG = [];
+  function log(step, detail){ DIAG.push({ step, detail }); }
+
+  function showDiag(title){
     const banner = document.getElementById('setupBanner');
     banner.style.display = 'block';
-    banner.textContent = msg;
+    banner.innerHTML =
+      '<strong>' + esc(title) + '</strong>' +
+      '<ul style="margin:10px 0 0;padding-left:18px;line-height:1.75;">' +
+        DIAG.map(d => '<li>' + esc(d.step) + (d.detail ? ' — ' + esc(d.detail) : '') + '</li>').join('') +
+      '</ul>';
+  }
+
+  /* ── 시트 읽기 ────────────────────────────── */
+  function sheetId(){
+    const m = String(SHEET_URL).match(/\/d\/([-\w]{20,})/) || String(SHEET_URL).match(/^([-\w]{30,})$/);
+    return m ? m[1] : '';
+  }
+
+  function csvUrl(name){
+    return 'https://docs.google.com/spreadsheets/d/' + sheetId() +
+      '/gviz/tq?tqx=out:csv&headers=0' +
+      (name ? '&sheet=' + encodeURIComponent(name) : '') +
+      '&_=' + Date.now();
+  }
+
+  /* 따옴표와 줄바꿈을 지키는 CSV 파서 */
+  function parseCsv(text){
+    const rows = [];
+    let row = [], cell = '', quoted = false;
+    for(let i = 0; i < text.length; i++){
+      const c = text[i];
+      if(quoted){
+        if(c === '"'){
+          if(text[i+1] === '"'){ cell += '"'; i++; }
+          else quoted = false;
+        }else cell += c;
+      }else if(c === '"'){ quoted = true; }
+      else if(c === ','){ row.push(cell); cell = ''; }
+      else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if(c !== '\r'){ cell += c; }
+    }
+    if(cell !== '' || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(r => r.some(v => trim(v) !== ''));
+  }
+
+  /* 시트 한 장을 읽습니다. name 이 비면 문서의 첫 번째 탭을 읽습니다.
+     결과: { ok, rows, why } */
+  async function readOne(name){
+    const url = csvUrl(name);
+    let res;
+    try{
+      res = await fetch(url, { cache:'no-store' });
+    }catch(e){
+      return { ok:false, rows:[], why:'네트워크 오류 — 시트 공유가 "링크가 있는 모든 사용자"인지 확인해 주세요.' };
+    }
+    const text = await res.text();
+
+    if(!res.ok){
+      return { ok:false, rows:[], why:'HTTP ' + res.status +
+        (res.status === 404 ? ' — 그런 이름의 탭이 없습니다.' :
+         (res.status === 401 || res.status === 403) ? ' — 공유 설정이 비공개입니다.' : '') };
+    }
+    if(/^\s*</.test(text) || /accounts\.google\.com/.test(text.slice(0, 500))){
+      return { ok:false, rows:[], why:'구글 로그인 화면이 돌아왔습니다. 공유를 "링크가 있는 모든 사용자 · 뷰어"로 바꿔주세요.', locked:true };
+    }
+    if(text.indexOf('google.visualization.Query.setResponse') >= 0 || /^\s*\/\*/.test(text)){
+      let reason = '';
+      const m = text.match(/"detailed_message":"(.*?)"/) || text.match(/"message":"(.*?)"/);
+      if(m) reason = m[1].replace(/\\u003c[^\\]*?\\u003e/g, '').replace(/\\'/g, "'");
+      return { ok:false, rows:[], why:reason || '그런 이름의 탭을 찾지 못했습니다.' };
+    }
+    return { ok:true, rows:parseCsv(text), why:'' };
+  }
+
+  function headerLine(rows){
+    return rows.length ? rows[0].map(trim).filter(Boolean).join(' | ') : '';
+  }
+
+  /* 첫 번째 탭 = 자료 링크 */
+  async function readSheet1(){
+    const label = SHEET1_NAME || '첫 번째 탭';
+    const r = await readOne(SHEET1_NAME);
+    if(!r.ok){ log('자료 시트를 읽지 못함 (' + label + ')', r.why); return []; }
+    if(!r.rows.length){ log('자료 시트가 비어 있음 (' + label + ')', '1행에 탭·항목·세부항목·분야 머리글을 넣어주세요.'); return []; }
+    log('자료 시트 읽음 (' + label + ')', r.rows.length + '행 · 머리글: ' + headerLine(r.rows));
+    return r.rows;
+  }
+
+  /* 두 번째 탭 = 평가회의. 이름을 모르면 후보를 차례로 시도합니다. */
+  async function readSheet2(){
+    const names = SHEET2_NAME ? [SHEET2_NAME] : SHEET2_CANDIDATES;
+    const tried = [];
+    for(let i = 0; i < names.length; i++){
+      const r = await readOne(names[i]);
+      if(r.locked){ log('평가회의 시트를 읽지 못함', r.why); return []; }
+      if(r.ok && r.rows.length){
+        log('평가회의 시트 읽음 ("' + names[i] + '")', r.rows.length + '행 · 머리글: ' + headerLine(r.rows));
+        return r.rows;
+      }
+      tried.push(names[i]);
+    }
+    log('평가회의 시트 없음', '두 번째 탭 이름을 ' + tried.map(n => '"' + n + '"').join(' / ') +
+      ' 중 하나로 하시거나, SHEET2_NAME 값에 실제 이름을 넣어주세요. (평가회의 탭은 빈 채로 표시됩니다)');
+    return [];
+  }
+
+  async function loadFromSheet(){
+    if(!sheetId()){
+      log('시트 주소가 비어 있음', '파일 위쪽 SHEET_URL 값에 구글시트 주소를 붙여넣어 주세요.');
+      return { link:[], meetings:[] };
+    }
+    log('시트 문서 ID', sheetId());
+    const link = await readSheet1();
+    const meetings = await readSheet2();
+    return { link, meetings };
   }
 
   async function load(){
+    let data = { link:[], meetings:[] };
     try{
-      const res = await fetch(LINK_API_URL + '?_=' + Date.now(), { cache:'no-store' });
-      const data = await res.json();
-      console.log('[디버그] Apps Script 응답:', data);
-      ingest(data);
-      console.log('[디버그] 버튼으로 만든 줄:', ROWS);
-      console.log('[디버그] 평가회의:', MEETINGS);
-      if(!ROWS.length && !MEETINGS.length){
-        const names = Array.isArray(data && data.sheetNames) ? data.sheetNames.join(' / ') : '';
-        notice('시트에서 링크를 한 줄도 읽지 못했습니다. "링크" 시트 1행에 탭·항목·세부항목과 분야 이름(무용·미술·음악·전통예술) 머리글이 있는지 확인해 주세요.' +
-          (names ? ' 지금 문서의 시트: ' + names : ''));
-      }
+      data = await loadFromSheet();
     }catch(err){
       console.error(err);
-      ROWS = fallbackRows();
-      MEETINGS = [];
-      notice('시트를 불러오지 못했습니다. Apps Script 웹앱 배포 상태(액세스 권한: 모든 사용자)를 확인해 주세요. 아래 문서 파일은 정상적으로 내려받을 수 있습니다.');
+      log('불러오기 중 오류', String(err && err.message || err));
+    }
+
+    ingest(data);
+    log('만든 버튼 줄', ROWS.length + '개');
+    log('읽은 평가회의', MEETINGS.length + '건');
+    console.log('[디버그] 원본:', data);
+    console.log('[디버그] 버튼:', ROWS);
+    console.log('[디버그] 평가회의:', MEETINGS);
+
+    const gotLinkRows = !!(data.link && data.link.length);
+    if(!ROWS.length && gotLinkRows){
+      log('자료 시트의 표를 해석하지 못함',
+        '1행에 "탭"과 "항목" 머리글이 있는지, 분야 이름(무용·미술·음악·전통예술)이 열 머리글에 있는지 확인해 주세요.');
+    }
+    if(!ROWS.length){
+      showDiag('시트에서 자료를 읽지 못했습니다. 아래 단계를 확인해 주세요.');
     }
     route();
   }
